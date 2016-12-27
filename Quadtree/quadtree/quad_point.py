@@ -72,7 +72,7 @@ class QuadNode:
             self.points = []
     
     def add (self, pt):
-        """Add (pt, data) to the QuadNode."""
+        """Add pt to the QuadNode."""
         node = self
         while node:
             # Not able to fit in this region

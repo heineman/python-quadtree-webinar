@@ -5,7 +5,7 @@
     Each Node evenly divides quadrants and stores shapes that are wholly contained by its rectangular
     region. 
     
-    Two or more identical shapes can exist
+    Two or more identical shapes can exist.
     
     Because the shapes are two-dimensional, they may intersect two (or more) of the subregions in the
     quadtree. Therefore, each shape is stored in the highest node in the tree whose associated 
