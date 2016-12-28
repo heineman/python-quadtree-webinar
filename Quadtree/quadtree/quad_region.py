@@ -282,6 +282,14 @@ class QuadTree:
     def __iter__(self):
         """In order traversal of elements in the tree."""
         if self.root:
+            # This gives QUADNODES which we need to check for FULL status.
             for e in self.root.preorder():
-                yield e
+                if e.isFull():
+                    # yield each one at a time.
+                    for x in range(e.region.x_min, e.region.x_max):
+                        for y in range(e.region.y_min, e.region.y_max):
+                            yield (x,y)
+                elif e.isPoint():
+                    yield (e.region.x_min, e.region.y_min)
+                    
         
