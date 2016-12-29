@@ -9,10 +9,10 @@
     
 """
 
-from tkinter import Tk, Canvas, ALL, Toplevel, Button
+from tkinter import Tk, Canvas, ALL
 import random
 
-from quadtree.quad import QuadTree, RADIUS, MULTIPLE, NE, NW, SW, SE
+from quadtree.quad import QuadTree, RADIUS, MULTIPLE
 from adk.region import Region, minValue, maxValue, X, Y
 
 from quadtree.visualize import VisualizationWindow

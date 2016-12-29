@@ -5,7 +5,7 @@
 
 """
 
-from quadtree.quad import QuadTree, RADIUS, MULTIPLE, NE, NW, SW, SE
+from quadtree.quad import NE, NW, SW, SE
 from collections import defaultdict
 
 def layoutDrawTree(tree):

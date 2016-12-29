@@ -1,7 +1,7 @@
 """
      Visualize quadtree in separate window.
 """
-from tkinter import Tk, Canvas, ALL, Toplevel, Button
+from tkinter import Canvas, ALL, Toplevel
 from tkinter.font import Font
 
 from quadtree.draw_tree import DrawTree, layoutDrawTree
