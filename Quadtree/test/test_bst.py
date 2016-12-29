@@ -9,13 +9,14 @@ class TestBSTMethods(unittest.TestCase):
         self.bst = BinaryTree()
         
     def populate(self):
-        self.bst.add("answer")
-        self.bst.add("ball")
-        self.bst.add("center")
-        self.bst.add("brilliant")
-        self.bst.add("bright")
-        self.bst.add("delay")
-        self.bst.add("crazy")
+        self.bst.add('answer')
+        self.bst.add('trays')
+        self.bst.add('ball')
+        self.bst.add('teach')
+        self.bst.add('brilliant')
+        self.bst.add('bright')
+        self.bst.add('stray')
+        self.bst.add('cheat')
         
     def tearDown(self):
         self.bst = None
@@ -23,21 +24,54 @@ class TestBSTMethods(unittest.TestCase):
     def test_basic(self):
         self.populate()
         
-        self.assertTrue("center" in self.bst)
-        
+        self.assertTrue("teach" in self.bst)
         
     def test_sameStarting(self):
         """Test interesting function that computes words with same starting letters."""
         self.populate()
+        
         # convert to list to use in multiple assertions.
-        intersections = list(self.bst.sameStartingLetters())
-        print (intersections)
+        intersections = list(self.bst.sameStartingLetter('b'))
+        
+        # only word starting with 'b'
+        self.assertEqual(['ball', 'bright', 'brilliant'], intersections)
+        
+        # convert to list to use in multiple assertions.
+        intersections = list(self.bst.sameStartingLetter('t'))
+        
+        # only word starting with 't'
+        self.assertEqual(['teach', 'trays'], intersections)
+        
+        # convert to list to use in multiple assertions.
+        intersections = list(self.bst.sameStartingLetter('a'))
+        
         # only word starting with 'a'
-        self.assertTrue(['answer'] in intersections)
+        self.assertEqual(['answer'], intersections)
+
+    def test_sameStarting_empty(self):
+        """Test interesting function that computes words with same starting letters."""
+        self.populate()
         
-        # these words all start with 'c'; because traversal is inorder, words are in sorted order.
-        self.assertTrue(['center', 'crazy'] in intersections)
+        # convert to list to use in multiple assertions.
+        intersections = list(self.bst.sameStartingLetter('g'))
         
+        # only word starting with 'a'
+        self.assertEqual([], intersections)
+        
+    def test_anagram(self):
+        """Validate anagram method."""
+        self.populate()
+         
+        matches = list(self.bst.findAnagrams('labl'))
+        self.assertEqual(['ball'], matches)
+         
+        matches = list(self.bst.findAnagrams('teach'))
+        self.assertEqual(['cheat', 'teach'], matches)
+        
+        matches = list(self.bst.findAnagrams('nothing'))
+        self.assertEqual([], matches)
+        
+    
     def test_adding(self):
         """Work with integers."""
         for _ in range(1000):

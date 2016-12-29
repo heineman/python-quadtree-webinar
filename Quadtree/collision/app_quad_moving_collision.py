@@ -67,9 +67,7 @@ class QuadTreeMovingApp:
         dx = random.randint(1,4)*(2*random.randint(0,1)-1)
         dy = random.randint(1,4)*(2*random.randint(0,1)-1)
         circle = [event.x, self.toCartesian(event.y), random.randint(4, MaxRadius), False, False, dx, dy]
-        
         self.tree.add(circle)
-        
         
     def reset(self, event):
         """Reset to start state."""
@@ -120,7 +118,6 @@ class QuadTreeMovingApp:
                 
                 s[HIT] = max(0, s[HIT]-1)     # update hit status
                 
-                
                 if s[X] - s[RADIUS] + s[DX] <= self.tree.region.x_min:
                     s[DX] = -s[DX]
                 elif s[X] + s[RADIUS] + s[DX] >= self.tree.region.x_max:
@@ -136,7 +133,6 @@ class QuadTreeMovingApp:
                     s[Y] = s[Y] + s[DY]
                     
               
-                # Suggestive of collision, but might miss outside node range.  
                 # Update hit status for all colliding points
                 for circ in self.tree.collide(s):
                     circ[HIT] = MaxHit

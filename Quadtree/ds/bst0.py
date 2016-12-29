@@ -11,17 +11,17 @@
 class BinaryNode:
 
     def __init__(self, value = None):
-        """Create Binary Node"""
+        """Create Binary Node."""
         self.value = value
         self.left = None
         self.right = None
 
     def add(self, val):
-        """Add a new node to BST with this value"""
+        """Add a new node to BST with this value."""
         pass
 
     def inorder(self):
-        """In order traversal of tree rooted at given node."""
+        """In-order traversal of tree rooted at given node."""
         if self.left:
             for n in self.left.inorder():
                 yield n
@@ -47,7 +47,7 @@ class BinaryTree:
         pass
 
     def __iter__(self):
-        """In order traversal of elements in the tree"""
+        """In order traversal of elements in the tree."""
         if self.root:
             return self.root.inorder()
                                 

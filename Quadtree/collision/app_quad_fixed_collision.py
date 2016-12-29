@@ -95,7 +95,6 @@ class QuadTreeFixedApp:
             self.canvas.create_oval(shape[X] - shape[RADIUS], self.toTk(shape[Y]) - shape[RADIUS], 
                                  shape[X] + shape[RADIUS], self.toTk(shape[Y]) + shape[RADIUS], 
                                  fill=markColor)
-            
         
         for n in node.children:
             self.visit(n)

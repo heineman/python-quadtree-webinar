@@ -11,13 +11,13 @@
 class BinaryNode:
 
     def __init__(self, value = None):
-        """Create Binary Node"""
+        """Create Binary Node."""
         self.value = value
         self.left = None
         self.right = None
 
     def add(self, val):
-        """Add a new node to BST with this value"""
+        """Add a new node to BST with this value."""
         if val <= self.value:
             if self.left:
                 self.left.add(val)
@@ -29,25 +29,22 @@ class BinaryNode:
             else:
                 self.right = BinaryNode(val)
 
-    def sameStartingLetters (self, collection):
-        """Follow inorder template to yield collection of words starting with same letter."""
-        if self.left:
-            for col in self.left.sameStartingLetters(collection):
-                yield col
+    def sameStartingLetter (self, letter):
+        """Follow inorder template to yield words starting with given letter."""
+        if self.left and self.value[0] >= letter[0]:
+            for word in self.left.sameStartingLetter(letter):
+                yield word
 
-        # yield a copy of the collection and clear values
-        if len(collection) != 0 and collection[0][0] != self.value[0]:
-            yield collection[:]
-            del collection[:]
+        # yield word if matches target letter
+        if self.value[0] == letter[0]:
+            yield self.value
             
-        collection.append(self.value)
-        
-        if self.right:
-            for col in self.right.sameStartingLetters(collection):
-                yield col    
+        if self.right and self.value[0] <= letter[0]:
+            for word in self.right.sameStartingLetter(letter):
+                yield word    
 
     def inorder(self):
-        """In order traversal of tree rooted at given node."""
+        """In-order traversal of tree rooted at given node."""
         if self.left:
             for n in self.left.inorder():
                 yield n
@@ -84,17 +81,20 @@ class BinaryTree:
         return False
 
     def __iter__(self):
-        """In order traversal of elements in the tree"""
+        """In order traversal of elements in the tree."""
         if self.root:
             return self.root.inorder()
                                 
-    def sameStartingLetters (self):
+    def sameStartingLetter (self, letter):
         """Return iterator of words starting with same letter."""
         if self.root:
-            collection = []
-            for col in self.root.sameStartingLetters(collection):
-                yield col
+            for word in self.root.sameStartingLetter(letter):
+                yield word
                 
-            # Don't forget lingering collection when traversal completes
-            if len(collection) > 0:
-                yield collection                                           
+    def findAnagrams (self, target):
+        """Return iterator of words that are anagrams for given target word."""
+        if self.root:
+            target = ''.join(sorted(target))
+            for word in self.root.inorder():
+                if target == ''.join(sorted(word)):
+                    yield word

@@ -19,12 +19,17 @@
 import math
 from adk.region import X, Y, Region
 
+# Quadrant constants
 NE = 0
 NW = 1
 SW = 2
 SE = 3
 
-# status for a node.
+# status for a node. Once all points for a node's region are in the quadtree,
+# that node is marked as FULL and all its children are deleted. When a point
+# is removed which makes it necessary for a node to be removed, it is marked
+# as DELETED and then removed during a prune operation. Otherwise, the status
+# of the node is NEUTRAL.
 FULL = 1
 NEUTRAL = 0
 DELETED = -1
@@ -133,11 +138,10 @@ class QuadNode:
             self.subdivide()
             self.setNeutral()
             
-            
         return self.children[q].remove(pt)
         
     def prune(self, pt):
-        """Pt has been removed from one of our children. Clean up nodes marked deleted."""
+        """Pt has been removed from one of our descendants. Remove nodes marked DELETED."""
         newRoot = self
         
         if self.isDeleted():
@@ -291,5 +295,3 @@ class QuadTree:
                             yield (x,y)
                 elif e.isPoint():
                     yield (e.region.x_min, e.region.y_min)
-                    
-        
