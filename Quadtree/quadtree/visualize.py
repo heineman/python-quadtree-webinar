@@ -15,13 +15,15 @@ class VisualizationWindow:
 
         self.frame.title("QuadTree Visualization")
         self.canvas.pack()
-        self.font = None
+        self.largeFont = None
+        self.smallFont = None
 
     def plot(self, tree):
         """Given DrawTree information, plot the quadtree."""
         dt = DrawTree(tree)
         dt = layoutDrawTree(dt)
         self.canvas.delete(ALL)
-        if self.font is None:
-            self.font = Font(family='Times', size='24')
-        dt.format(self.canvas, self.font, -1)
+        if self.largeFont is None:
+            self.largeFont = Font(family='Times', size='24')
+            self.smallFont = Font(family='Times', size='14')
+        dt.format(self.canvas, self.smallFont, self.largeFont, -1)

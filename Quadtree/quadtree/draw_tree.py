@@ -18,12 +18,15 @@ def setupDrawTree(tree, depth=0, nexts=None, offset=None):
     if offset is None: offset = defaultdict(lambda: 0)
 
     countChild = 0
-    total = 0
-    for quad in [NW, NE, SW, SE]:
+    x_min = 99999
+    x_max = -99999
+    
+    for quad in range(len(tree.children)):
         if tree.children[quad] is not None:
             countChild = countChild + 1
             setupDrawTree(tree.children[quad], depth+1, nexts, offset)
-            total = total + tree.children[quad].x
+            x_min = min(x_min, tree.children[quad].x)
+            x_max = max(x_max, tree.children[quad].x)
 
     tree.y = depth
     
@@ -31,13 +34,13 @@ def setupDrawTree(tree, depth=0, nexts=None, offset=None):
         place = nexts[depth]
         tree.x = place
     elif countChild == 1:
-        place = tree.children[0].x - 1
+        place = x_min - 1           # either max or min will do
     else:
-        place = total / countChild
+        place = (x_min + x_max) / 2
 
     offset[depth] = max(offset[depth], nexts[depth]-place)
 
-    if len(tree.children):
+    if countChild > 0:
         tree.x = place + offset[depth]
 
     nexts[depth] += 2
@@ -47,7 +50,7 @@ def addmodsDrawTree(tree, modsum=0):
     tree.x = tree.x + modsum
     modsum += tree.mod
 
-    for quad in [NW, NE, SW, SE]:
+    for quad in range(len(tree.children)):
         if tree.children[quad] is not None:
             addmodsDrawTree(tree.children[quad], modsum)            
 
@@ -61,7 +64,7 @@ class DrawTree(object):
         self.y = depth
         self.node = qtnode
         self.children = [None] * 4
-        for quad in [NW, NE, SW, SE]:
+        for quad in range(len(qtnode.children)):
             if qtnode.children[quad] is not None:
                 self.children[quad] = DrawTree(qtnode.children[quad], depth+1)
         self.mod = 0
@@ -71,14 +74,14 @@ class DrawTree(object):
         return (self.x*self.magx + self.width/2,
                 self.y*self.magy + self.height/2)
 
-    def format(self, canvas, font, orientation):
+    def format(self, canvas, smallFont, largeFont, orientation):
         """add to canvas."""
-        for quad in [NW, NE, SW, SE]:
+        for quad in range(len(self.children)):
             if self.children[quad] is not None:
                 mid = self.middle()
                 child = self.children[quad].middle()
                 canvas.create_line(mid[0], mid[1], child[0], child[1])
-                self.children[quad].format(canvas, font, quad)
+                self.children[quad].format(canvas, smallFont, largeFont, quad)
 
         colorToUse = 'white'
         if len(self.node.shapes) == 0:
@@ -112,14 +115,18 @@ class DrawTree(object):
                                     self.y*self.magy+self.height,
                                     fill='#ccffff')
 
+        font = largeFont
+        count = len(self.node.shapes)
+        if count > 9:
+            font = smallFont
         canvas.create_text(self.x*self.magx+self.width/2, self.y*self.magy + self.height/2,
                            font=font,
-                           width=self.width, text=str(len(self.node.shapes)))
+                           width=self.width, text=str(count))
 
 
     def prettyPrint(self):
         """pp out the tree"""
         print (str(self.x) + "," + str(self.y) + " " + str(self.node.region))
-        for quad in [NW, NE, SW, SE]:
+        for quad in range(len(self.children)):
             if self.children[quad] is not None:
                 self.children[quad].prettyPrint()

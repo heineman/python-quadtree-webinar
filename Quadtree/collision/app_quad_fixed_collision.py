@@ -41,7 +41,8 @@ class QuadTreeFixedApp:
         
         self.canvas = Canvas(master, width=512, height=512)        
         self.canvas.bind("<Button-1>", self.click)
-        self.canvas.bind("<Button-3>", self.reset)
+        self.canvas.bind("<Button-2>", self.reset)      # needed for Mac
+        self.canvas.bind("<Button-3>", self.reset)      # this is PC
         self.canvas.pack()
 
     def toCartesian(self, y):

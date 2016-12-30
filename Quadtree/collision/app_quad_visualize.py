@@ -42,8 +42,8 @@ class QuadTreeFixedApp:
         
         self.canvas = Canvas(master, width=512, height=512)        
         self.canvas.bind("<Button-1>", self.click)
-        self.canvas.bind("<Button-2>", self.reset)
-        self.canvas.bind("<Button-3>", self.reset)
+        self.canvas.bind("<Button-2>", self.reset)      # Needed for Mac
+        self.canvas.bind("<Button-3>", self.reset)      # This is PC
         self.canvas.pack()
 
         # no visualization just yet
@@ -73,13 +73,17 @@ class QuadTreeFixedApp:
         self.tree.add(circle)
         self.visit(self.tree.root)
         self.viz.plot(self.tree.root)
-        
-
+        for point in self.tree:
+            print (point)
+        print()
+            
     def reset(self, event):
         """Reset to start state."""
+        
         self.tree = QuadTree(Region(0,0,512,512))
         self.canvas.delete(ALL)
         self.visit(self.tree.root)
+        
 
     def visit (self, node):
         """ Visit nodes recursively."""

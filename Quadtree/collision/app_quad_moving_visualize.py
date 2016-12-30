@@ -42,7 +42,7 @@ class QuadTreeFixedApp:
     def __init__(self, master):
         """App for creating Quad tree dynamically with fixed circles that detect collisions."""
         
-        master.title("Click to add fixed circles for QuadTree collision detection.") 
+        master.title("Left-Click adds circle. Right click pauses motion.") 
         self.master = master 
         self.paused = False
         
@@ -51,8 +51,8 @@ class QuadTreeFixedApp:
         
         self.canvas = Canvas(master, width=512, height=512)        
         self.canvas.bind("<Button-1>", self.click)
-        self.canvas.bind("<Button-2>", self.pause)
-        self.canvas.bind("<Button-3>", self.pause)
+        self.canvas.bind("<Button-2>", self.pause)      # Needed for Mac
+        self.canvas.bind("<Button-3>", self.pause)      # This is PC
         self.master.after(frameDelay, self.updateLocations)
         self.canvas.pack()
 
