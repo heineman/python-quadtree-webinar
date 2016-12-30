@@ -73,18 +73,14 @@ class QuadTreeFixedApp:
         self.tree.add(circle)
         self.visit(self.tree.root)
         self.viz.plot(self.tree.root)
-        for point in self.tree:
-            print (point)
-        print()
             
     def reset(self, event):
         """Reset to start state."""
-        
         self.tree = QuadTree(Region(0,0,512,512))
         self.canvas.delete(ALL)
         self.visit(self.tree.root)
+        self.viz.clear()
         
-
     def visit (self, node):
         """ Visit nodes recursively."""
         if node == None: 
@@ -106,12 +102,9 @@ class QuadTreeFixedApp:
             self.canvas.create_oval(shape[X] - shape[RADIUS], self.toTk(shape[Y]) - shape[RADIUS], 
                                  shape[X] + shape[RADIUS], self.toTk(shape[Y]) + shape[RADIUS], 
                                  fill=markColor)
-            
-        
         for n in node.children:
             self.visit(n)
             
-
 if __name__ == "__main__":
     root = Tk()
     app = QuadTreeFixedApp(root)

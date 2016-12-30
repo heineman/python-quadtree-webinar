@@ -2,6 +2,9 @@
     Perform visual layout of quadtree in Tk canvas.
 
     Layout inspired by https://llimllib.github.io/pymag-trees/
+    
+    Note: still has drawing problems with depth > 3 and all points in 
+    upper-most right quadrant.
 
 """
 
@@ -23,7 +26,7 @@ def setupDrawTree(tree, depth=0, nexts=None, offset=None):
     
     for quad in range(len(tree.children)):
         if tree.children[quad] is not None:
-            countChild = countChild + 1
+            countChild += 1
             setupDrawTree(tree.children[quad], depth+1, nexts, offset)
             x_min = min(x_min, tree.children[quad].x)
             x_max = max(x_max, tree.children[quad].x)
@@ -43,11 +46,11 @@ def setupDrawTree(tree, depth=0, nexts=None, offset=None):
     if countChild > 0:
         tree.x = place + offset[depth]
 
-    nexts[depth] += 2
+    nexts[depth] += 2               # skips one location for next time  
     tree.mod = offset[depth]
 
 def addmodsDrawTree(tree, modsum=0):
-    tree.x = tree.x + modsum
+    tree.x += modsum
     modsum += tree.mod
 
     for quad in range(len(tree.children)):
@@ -59,8 +62,8 @@ class DrawTree(object):
         self.x = -1
         self.magx = 30
         self.magy = 80
-        self.width = 30
-        self.height = 30
+        self.width = 25
+        self.height = 25
         self.y = depth
         self.node = qtnode
         self.children = [None] * 4

@@ -39,6 +39,9 @@ MinRadius = 10
 
 class QuadTreeFixedApp:
     
+    defaultTitle = 'Left-Click adds circle. Right click pauses motion.'
+    pausedTitle  = 'Left-Click resumes. Right-click resets.'
+    
     def __init__(self, master):
         """App for creating Quad tree dynamically with fixed circles that detect collisions."""
         
@@ -71,11 +74,16 @@ class QuadTreeFixedApp:
             tk_y -= y
         return tk_y
          
+    def restart(self):
+        """Restart motion."""
+        self.master.after(frameDelay, self.updateLocations)
+        self.master.title(QuadTreeFixedApp.defaultTitle) 
+        self.paused = False
+    
     def click(self, event):
         """Add circle to QuadTree with random radius and direction."""
         if self.paused:
-            self.master.after(frameDelay, self.updateLocations)
-            self.paused = False
+            self.restart()
         else:
             dx = random.randint(1,4)*(2*random.randint(0,1)-1)
             dy = random.randint(1,4)*(2*random.randint(0,1)-1)
@@ -89,8 +97,11 @@ class QuadTreeFixedApp:
             self.tree = QuadTree(Region(0,0,512,512))
             self.canvas.delete(ALL)
             self.visit(self.tree.root)
+            self.viz.clear()
+            self.restart()
         else:
             self.paused = True
+            self.master.title(QuadTreeFixedApp.pausedTitle) 
 
     def visit (self, node):
         """ Visit nodes recursively."""
@@ -113,12 +124,9 @@ class QuadTreeFixedApp:
             self.canvas.create_oval(shape[X] - shape[RADIUS], self.toTk(shape[Y]) - shape[RADIUS], 
                                  shape[X] + shape[RADIUS], self.toTk(shape[Y]) + shape[RADIUS], 
                                  fill=markColor)
-            
-        
         for n in node.children:
             self.visit(n)
             
-        
     def updateLocations(self):
         """Move all shapes, reconstruct Quadtree and repaint."""
         if not self.paused:
@@ -153,8 +161,6 @@ class QuadTreeFixedApp:
                 else:
                     s[Y] = s[Y] + s[DY]
                     
-              
-                # Suggestive of collision, but might miss outside node range.  
                 # Update hit status for all colliding points
                 for circ in self.tree.collide(s):
                     circ[HIT] = MaxHit

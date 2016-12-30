@@ -27,7 +27,6 @@ class SkeletonAnimationApp():
         # Register handler which redraws everything at fixed interval
         self.master.after(frameDelay, self.drawEverything)
         
-         
     def track(self, event):
         """Refresh event collection and redraw."""
         self.events.append((event.x, event.y))

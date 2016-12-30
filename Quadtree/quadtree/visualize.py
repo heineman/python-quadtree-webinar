@@ -10,13 +10,16 @@ class VisualizationWindow:
     def __init__(self, master):
         self.master = master
         self.frame = Toplevel(width=1024, height=512)
-
         self.canvas = Canvas(self.frame, width=1024, height=512)        
 
         self.frame.title("QuadTree Visualization")
         self.canvas.pack()
         self.largeFont = None
         self.smallFont = None
+
+    def clear(self):
+        """Clear everything."""
+        self.canvas.delete(ALL)
 
     def plot(self, tree):
         """Given DrawTree information, plot the quadtree."""
