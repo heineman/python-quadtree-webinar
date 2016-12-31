@@ -14,12 +14,24 @@
 from quadtree.quad import NE, NW, SW, SE
 from collections import defaultdict
 
+# Width,height in pixels for the nodes.
+node_w = 25
+node_h = 25
+
+# Magnification factor to convert abstract positioning from DrawTree into
+# actual pixels. Note that width < magx and height < magy otherwise bad
+# things happen.
+magx = 30
+magy = 80
+
 def layoutDrawTree(tree):
+    """Compute the layout for a DrawTree."""
     setupDrawTree(tree)
     addmodsDrawTree(tree)
     return tree
 
 def setupDrawTree(tree, depth=0, nexts=None, offset=None):
+    """Recursively assign (x,y) abstract values to each node in DrawTree."""
     if nexts is None:  nexts  = defaultdict(lambda: 0)
     if offset is None: offset = defaultdict(lambda: 0)
 
@@ -53,6 +65,7 @@ def setupDrawTree(tree, depth=0, nexts=None, offset=None):
     tree.mod = offset[depth]
 
 def addmodsDrawTree(tree, modsum=0):
+    """Recursively offset nodes horizontally by computed 'mod' values."""
     tree.x += modsum
     modsum += tree.mod
 
@@ -61,13 +74,18 @@ def addmodsDrawTree(tree, modsum=0):
             addmodsDrawTree(tree.children[quad], modsum)            
 
 class DrawTree(object):
+    """
+    Abstract representation of a quadtree, in preparation for visualization.
+    Each DrawTree node is assigned an (x,y) integer pair where y reflects 
+    the depth of the node (0=root) and x reflects the offset position within 
+    that depth.
+
+    Algorithm taken from https://llimllib.github.io/pymag-trees/
+
+    """
     def __init__(self, qtnode, depth=0, label=None):
         self.label = label
         self.x = -1
-        self.magx = 30
-        self.magy = 80
-        self.width = 25
-        self.height = 25
         self.y = depth
         self.node = qtnode
         self.children = [None] * 4
@@ -77,12 +95,12 @@ class DrawTree(object):
         self.mod = 0
 
     def middle(self):
-        """middle point"""
-        return (self.x*self.magx + self.width/2,
-                self.y*self.magy + self.height/2)
+        """compute mid point for DrawTree node."""
+        return (self.x*magx + node_w/2,
+                self.y*magy + node_h/2)
 
     def format(self, canvas, smallFont, largeFont, orientation):
-        """add to canvas."""
+        """Crete visual representation of node on canvas."""
         for quad in range(len(self.children)):
             if self.children[quad] is not None:
                 mid = self.middle()
@@ -95,33 +113,33 @@ class DrawTree(object):
             ival = self.label(self.node)
             if ival == 0:
                 colorToUse = 'gray'
-        canvas.create_rectangle(self.x*self.magx, self.y*self.magy,
-                                self.x*self.magx+self.width, self.y*self.magy+self.height, fill=colorToUse);
+        canvas.create_rectangle(self.x*magx, self.y*magy,
+                                self.x*magx+node_w, self.y*magy+node_h, fill=colorToUse);
 
         # draw corner in faint colors
         if orientation == NW:
-            canvas.create_rectangle(self.x*self.magx,
-                                    self.y*self.magy,
-                                    self.x*self.magx+self.width/2, 
-                                    self.y*self.magy+self.height/2,
+            canvas.create_rectangle(self.x*magx,
+                                    self.y*magy,
+                                    self.x*magx+node_w/2, 
+                                    self.y*magy+node_h/2,
                                     fill='#ffcccc')
         elif orientation == NE:
-            canvas.create_rectangle(self.x*self.magx+self.width/2,
-                                    self.y*self.magy,
-                                    self.x*self.magx+self.width, 
-                                    self.y*self.magy+self.height/2,
+            canvas.create_rectangle(self.x*magx+node_w/2,
+                                    self.y*magy,
+                                    self.x*magx+node_w, 
+                                    self.y*magy+node_h/2,
                                     fill='#ccffcc')
         elif orientation == SW:
-            canvas.create_rectangle(self.x*self.magx,
-                                    self.y*self.magy+self.height/2,
-                                    self.x*self.magx+self.width/2, 
-                                    self.y*self.magy+self.height,
+            canvas.create_rectangle(self.x*magx,
+                                    self.y*magy+node_h/2,
+                                    self.x*magx+node_w/2, 
+                                    self.y*magy+node_h,
                                     fill='#ccccff')
         elif orientation == SE:
-            canvas.create_rectangle(self.x*self.magx+self.width/2,
-                                    self.y*self.magy+self.height/2,
-                                    self.x*self.magx+self.width, 
-                                    self.y*self.magy+self.height,
+            canvas.create_rectangle(self.x*magx+node_w/2,
+                                    self.y*magy+node_h/2,
+                                    self.x*magx+node_w, 
+                                    self.y*magy+node_h,
                                     fill='#ccffff')
 
         font = largeFont
@@ -132,13 +150,13 @@ class DrawTree(object):
             if ival > 9:
                 font = smallFont
         
-        canvas.create_text(self.x*self.magx+self.width/2,
-                           self.y*self.magy + self.height/2,
+        canvas.create_text(self.x*magx+node_w/2,
+                           self.y*magy + node_h/2,
                            font=font,
-                           width=self.width, text=text)
+                           width=node_w, text=text)
 
     def prettyPrint(self):
-        """pp out the tree"""
+        """pp out the tree for debugging."""
         print (str(self.x) + "," + str(self.y) + " " + str(self.node.region))
         for quad in range(len(self.children)):
             if self.children[quad] is not None:

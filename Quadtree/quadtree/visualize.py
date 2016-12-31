@@ -29,7 +29,9 @@ class VisualizationWindow:
         dt = DrawTree(tree, label=self.label)
         dt = layoutDrawTree(dt)
         self.canvas.delete(ALL)
+
         if self.largeFont is None:
             self.largeFont = Font(family='Times', size='24')
             self.smallFont = Font(family='Times', size='14')
+
         dt.format(self.canvas, self.smallFont, self.largeFont, -1)

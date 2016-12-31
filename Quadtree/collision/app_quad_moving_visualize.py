@@ -37,6 +37,13 @@ frameDelay = 40
 MaxRadius = 30
 MinRadius = 10
 
+def label(node):
+    """Return integer to display in node."""
+    if node.shapes:
+        return len(node.shapes)
+    else:
+        return 0
+
 class QuadTreeFixedApp:
     
     defaultTitle = 'Left-Click adds circle. Right click pauses motion.'
@@ -174,5 +181,5 @@ class QuadTreeFixedApp:
 if __name__ == "__main__":
     root = Tk()
     app = QuadTreeFixedApp(root)
-    app.viz = VisualizationWindow(root)
+    app.viz = VisualizationWindow(root, label=label)
     root.mainloop()
