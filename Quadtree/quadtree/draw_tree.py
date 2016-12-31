@@ -3,6 +3,9 @@
 
     Layout inspired by https://llimllib.github.io/pymag-trees/
     
+    Accepts any structure that has 'children' list attribute with up to
+    four child nodes.
+
     Note: still has drawing problems with depth > 3 and all points in 
     upper-most right quadrant.
 
@@ -58,7 +61,8 @@ def addmodsDrawTree(tree, modsum=0):
             addmodsDrawTree(tree.children[quad], modsum)            
 
 class DrawTree(object):
-    def __init__(self, qtnode, depth=0):
+    def __init__(self, qtnode, depth=0, label=None):
+        self.label = label
         self.x = -1
         self.magx = 30
         self.magy = 80
@@ -69,7 +73,7 @@ class DrawTree(object):
         self.children = [None] * 4
         for quad in range(len(qtnode.children)):
             if qtnode.children[quad] is not None:
-                self.children[quad] = DrawTree(qtnode.children[quad], depth+1)
+                self.children[quad] = DrawTree(qtnode.children[quad], depth+1, label)
         self.mod = 0
 
     def middle(self):
@@ -87,8 +91,10 @@ class DrawTree(object):
                 self.children[quad].format(canvas, smallFont, largeFont, quad)
 
         colorToUse = 'white'
-        if len(self.node.shapes) == 0:
-            colorToUse = 'gray'
+        if self.label:
+            ival = self.label(self.node)
+            if ival == 0:
+                colorToUse = 'gray'
         canvas.create_rectangle(self.x*self.magx, self.y*self.magy,
                                 self.x*self.magx+self.width, self.y*self.magy+self.height, fill=colorToUse);
 
@@ -119,13 +125,17 @@ class DrawTree(object):
                                     fill='#ccffff')
 
         font = largeFont
-        count = len(self.node.shapes)
-        if count > 9:
-            font = smallFont
-        canvas.create_text(self.x*self.magx+self.width/2, self.y*self.magy + self.height/2,
+        text = ''
+        if self.label:
+            ival = self.label(self.node)
+            text = str(ival)
+            if ival > 9:
+                font = smallFont
+        
+        canvas.create_text(self.x*self.magx+self.width/2,
+                           self.y*self.magy + self.height/2,
                            font=font,
-                           width=self.width, text=str(count))
-
+                           width=self.width, text=text)
 
     def prettyPrint(self):
         """pp out the tree"""

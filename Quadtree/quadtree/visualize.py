@@ -7,7 +7,8 @@ from tkinter.font import Font
 from quadtree.draw_tree import DrawTree, layoutDrawTree
 
 class VisualizationWindow:
-    def __init__(self, master):
+    def __init__(self, master, label=None):
+        """label is function for DrawTree that takes node and returns int."""
         self.master = master
         self.frame = Toplevel(width=1024, height=512)
         self.canvas = Canvas(self.frame, width=1024, height=512)        
@@ -16,6 +17,8 @@ class VisualizationWindow:
         self.canvas.pack()
         self.largeFont = None
         self.smallFont = None
+        self.label = label
+        print ("label is:" + str(self.label))
 
     def clear(self):
         """Clear everything."""
@@ -23,7 +26,7 @@ class VisualizationWindow:
 
     def plot(self, tree):
         """Given DrawTree information, plot the quadtree."""
-        dt = DrawTree(tree)
+        dt = DrawTree(tree, label=self.label)
         dt = layoutDrawTree(dt)
         self.canvas.delete(ALL)
         if self.largeFont is None:
