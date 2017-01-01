@@ -108,6 +108,6 @@ class QuadTreePointApp:
             
 if __name__ == "__main__":
     root = Tk()
-    app = QuadTreePointApp(root, 64)
+    app = QuadTreePointApp(root, 64)     # parameter is size of each square by pixels
     app.viz = VisualizationWindow(root, label)
     root.mainloop()

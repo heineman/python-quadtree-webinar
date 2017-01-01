@@ -3,7 +3,6 @@
 """
 from tkinter import Canvas, ALL, Toplevel
 from tkinter.font import Font
-
 from quadtree.draw_tree import DrawTree, layoutDrawTree
 
 class VisualizationWindow:
@@ -15,8 +14,6 @@ class VisualizationWindow:
 
         self.frame.title("QuadTree Visualization")
         self.canvas.pack()
-        self.largeFont = None
-        self.smallFont = None
         self.label = label
         print ("label is:" + str(self.label))
 
@@ -30,11 +27,10 @@ class VisualizationWindow:
         if tree is None:
             return
         
+        # Initialize fonts to use
+        DrawTree.smallFont = Font(family='Times', size='14')
+        DrawTree.largeFont = Font(family='Times', size='24')
+        
         dt = DrawTree(tree, label=self.label)
         dt = layoutDrawTree(dt)
-        
-        if self.largeFont is None:
-            self.largeFont = Font(family='Times', size='24')
-            self.smallFont = Font(family='Times', size='14')
-
-        dt.format(self.canvas, self.smallFont, self.largeFont, -1)
+        dt.format(self.canvas, -1)

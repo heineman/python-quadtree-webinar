@@ -22,9 +22,10 @@ from adk.region import Region, X, Y
 # each point (X,Y,RADIUS) represents a circle.
 RADIUS=2
 
-# Not needed, but included for descriptive coloring in GUI
+# Associated tuple position that declares whether circle cuts over multiple nodes.
 MULTIPLE=4
 
+# Each node can be subdivided into four quadrants.
 NE = 0
 NW = 1
 SW = 2
@@ -87,7 +88,6 @@ def defaultCollision(c1, c2):
     sumSquared = (c1[RADIUS]+c2[RADIUS])**2
     if centerDistance > sumSquared: return False
     return True
-    ###return (c1[RADIUS]-c2[RADIUS])**2 <= centerDistance <= sumSquared 
     
 
 class QuadNode:
@@ -214,7 +214,7 @@ class QuadNode:
 
 class QuadTree:
 
-    # define default collision which can be set. Affects all QuadTree objects
+    # define default collision which can be replaced. Affects all QuadTree objects
     collision = defaultCollision
 
     def __init__(self, region):
@@ -270,4 +270,3 @@ class QuadTree:
         if self.root:
             for e in self.root.preorder():
                 yield e
-        

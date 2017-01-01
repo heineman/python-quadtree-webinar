@@ -153,6 +153,27 @@ class TestBSTMethods(unittest.TestCase):
         for pt in grab:
             self.assertTrue(pt in actual)
 
+    def test_cleanup(self):
+        self.qt = QuadTree(Region(0,0,128,128))
+        actual = []
+        for i in range(128):
+            for j in range(128):
+                actual.append((i,j))
+        
+        # For five times, add all randomly and remove randomly until
+        # tree is entirely empty
+        for i in range(5):
+            random.shuffle(actual)
+           
+            for pt in actual:
+                self.assertTrue(self.qt.add(pt))             
+            
+            random.shuffle(actual)
+            
+            for pt in actual:
+                self.assertTrue(self.qt.remove(pt))     
+                
+            self.assertTrue(self.qt.root == None)
 
 if __name__ == '__main__':
     unittest.main()    

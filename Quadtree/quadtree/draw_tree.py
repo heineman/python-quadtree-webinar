@@ -6,8 +6,7 @@
     Accepts any structure that has 'children' list attribute with up to
     four child nodes.
 
-    Note: still has drawing problems with depth > 3 and all points in 
-    upper-most right quadrant.
+    Note: Before use, must externally set the small/large fonts to use.
 """
 
 from quadtree.quad import NE, NW, SW, SE
@@ -36,11 +35,13 @@ def setupDrawTree(tree, depth=0, nexts=None):
     x_min = 99999
     x_max = -99999
     
-    # place self initially before children, and space for next time
+    # place self initially before children, and update next coordinate for node
+    # on this same depth level (might not be a direct sibling)
     tree.x = nexts[depth]
     nexts[depth] += 2
     tree.y = depth
     
+    # recursively process all descendant nodes, and determine min/max of direct children.
     for quad in range(len(tree.children)):
         if tree.children[quad] is not None:
             setupDrawTree(tree.children[quad], depth+1, nexts)
@@ -73,10 +74,15 @@ class DrawTree(object):
     the depth of the node (0=root) and x reflects the offset position within 
     that depth.
 
-    Algorithm taken from https://llimllib.github.io/pymag-trees/
-
+    Algorithm inspired by from https://llimllib.github.io/pymag-trees/
     """
+    
+    # must be set externally after tk is initialized.
+    smallFont = None
+    largeFont = None
+    
     def __init__(self, qtnode, depth=0, label=None):
+        """Recursively construct DrawTree structure to parallel quadtree node."""
         self.label = label
         self.x = -1
         self.y = depth
@@ -93,14 +99,14 @@ class DrawTree(object):
         return (self.x*magx + node_w/2,
                 self.y*magy + node_h/2)
 
-    def format(self, canvas, smallFont, largeFont, orientation):
+    def format(self, canvas, orientation):
         """Crete visual representation of node on canvas."""
         for quad in range(len(self.children)):
             if self.children[quad] is not None:
                 mid = self.middle()
                 child = self.children[quad].middle()
                 canvas.create_line(mid[0], mid[1], child[0], child[1])
-                self.children[quad].format(canvas, smallFont, largeFont, quad)
+                self.children[quad].format(canvas, quad)
 
         colorToUse = 'white'
         if self.label:
@@ -108,7 +114,7 @@ class DrawTree(object):
             if ival == 0:
                 colorToUse = 'gray'
         canvas.create_rectangle(self.x*magx, self.y*magy,
-                                self.x*magx+node_w, self.y*magy+node_h, fill=colorToUse);
+                                self.x*magx+node_w, self.y*magy+node_h, fill=colorToUse)
 
         # draw corner in faint colors
         if orientation == NW:
@@ -136,13 +142,14 @@ class DrawTree(object):
                                     self.y*magy+node_h,
                                     fill='#ccffff')
 
-        font = largeFont
+        # use small font for 10 and higher.
+        font = DrawTree.largeFont
         text = ''
         if self.label:
             ival = self.label(self.node)
             text = str(ival)
             if ival > 9:
-                font = smallFont
+                font = DrawTree.smallFont
         
         canvas.create_text(self.x*magx+node_w/2,
                            self.y*magy + node_h/2,
