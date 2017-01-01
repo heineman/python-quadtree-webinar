@@ -10,7 +10,6 @@
 """
 
 from tkinter import Tk, Canvas, ALL
-import random
 
 from quadtree.quad_region import QuadTree
 from adk.region import Region, minValue, maxValue, X, Y

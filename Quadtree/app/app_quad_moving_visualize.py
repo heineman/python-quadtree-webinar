@@ -4,9 +4,6 @@
     
     Left mouse adds circle.
     
-    Assumes you have python-igraph and plotly installed. Assumes you have
-    stored your API credentials locally to work.
-    
 """
 
 from tkinter import Tk, Canvas, ALL

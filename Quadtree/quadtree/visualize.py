@@ -26,10 +26,13 @@ class VisualizationWindow:
 
     def plot(self, tree):
         """Given DrawTree information, plot the quadtree."""
+        self.canvas.delete(ALL)
+        if tree is None:
+            return
+        
         dt = DrawTree(tree, label=self.label)
         dt = layoutDrawTree(dt)
-        self.canvas.delete(ALL)
-
+        
         if self.largeFont is None:
             self.largeFont = Font(family='Times', size='24')
             self.smallFont = Font(family='Times', size='14')

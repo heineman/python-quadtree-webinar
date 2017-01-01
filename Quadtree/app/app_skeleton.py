@@ -7,7 +7,8 @@
 from adk.region import X, Y
 from tkinter import Tk, Canvas, ALL
 
-numEvents = 5               # How many events to track
+# How many events to track
+numEvents = 5               
 
 class SkeletonApp():
     def __init__(self, master):

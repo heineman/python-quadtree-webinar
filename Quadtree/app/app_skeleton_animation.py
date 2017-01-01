@@ -7,8 +7,11 @@
 from adk.region import X, Y
 from tkinter import Tk, Canvas, ALL
 
-numEvents = 10               # How many events to track
-frameDelay = 25              # Ms between refresh events.
+# How many events to track
+numEvents = 10
+
+# Ms between refresh events.        
+frameDelay = 25
 
 class SkeletonAnimationApp():
     def __init__(self, master):
