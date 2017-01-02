@@ -178,7 +178,7 @@ class QuadNode:
     
     
     def quadrants(self, circle):
-        """Determine quadrants in which point exists. Closed intervals on quadrants I (NE) and III (SW)."""
+        """Determine quadrant(s) in which point exists. Closed intervals on quadrants I (NE) and III (SW)."""
         quads = []
         if intersectsCircle(self.children[NE].region, circle): quads.append(NE)
         if intersectsCircle(self.children[NW].region, circle): quads.append(NW)

@@ -21,7 +21,7 @@ class TestCollisionMethods(unittest.TestCase):
         self.c2 = [20, 20, 5, False, False]
          
         self.assertTrue (defaultCollision(self.c1, self.c2))
-        self.assertTrue  (defaultCollision(self.c2, self.c1))
+        self.assertTrue (defaultCollision(self.c2, self.c1))
         
     def test_edgeCase(self):
         """Share edge point."""
@@ -29,7 +29,7 @@ class TestCollisionMethods(unittest.TestCase):
         self.c2 = [8, 4, 2, False, False]
          
         self.assertTrue (defaultCollision(self.c1, self.c2))
-        self.assertTrue  (defaultCollision(self.c2, self.c1))
+        self.assertTrue (defaultCollision(self.c2, self.c1))
         
     def test_missed(self):
         """Just missing each other."""
@@ -45,8 +45,8 @@ class TestCollisionMethods(unittest.TestCase):
          
         self.assertTrue (intersectsCircle(r, [16, 16, 2, False, False]))  # circle wholly in region
         self.assertTrue (intersectsCircle(r, [8, 10, 2, False, False]))   # left-edge
-        self.assertTrue (intersectsCircle(r, [10, 8, 2, False, False]))   # bot-left corner
-        self.assertTrue (intersectsCircle(r, [20, 8, 2, False, False]))   # bot-right corner
+        self.assertTrue (intersectsCircle(r, [10, 8, 2, False, False]))   # bottom-left corner
+        self.assertTrue (intersectsCircle(r, [20, 8, 2, False, False]))   # bottom-right corner
         self.assertTrue (intersectsCircle(r, [14, 6, 5, False, False]))   # bottom-edge
         
         self.assertTrue (intersectsCircle(r, [15, 22, 2, False, False]))  # top-edge
@@ -60,7 +60,7 @@ class TestCollisionMethods(unittest.TestCase):
         self.assertFalse (intersectsCircle(r, [6, 10, 2, False, False]))   # miss to left
         self.assertFalse (intersectsCircle(r, [26, 10, 2, False, False]))  # miss to right
         self.assertFalse (intersectsCircle(r, [14, 23, 2, False, False]))  # miss to top
-        self.assertFalse (intersectsCircle(r, [14, 7, 2, False, False]))  # miss to bottom
+        self.assertFalse (intersectsCircle(r, [14, 7, 2, False, False]))   # miss to bottom
        
         
 

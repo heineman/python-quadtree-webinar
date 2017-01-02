@@ -183,15 +183,13 @@ class QuadNode:
             return Region(region.x_min,   region.y_min,   self.origin[X], self.origin[Y])
         if q is SE:
             return Region(self.origin[X], region.y_min,   region.x_max,   self.origin[Y])
-        
     
     def subdivide(self):
         """Add four children nodes to node, and retain status of parent node."""
-        region = self.region
-        self.children[NE] = QuadNode(Region(self.origin[X], self.origin[Y], region.x_max,   region.y_max), self.status)
-        self.children[NW] = QuadNode(Region(region.x_min,   self.origin[Y], self.origin[X], region.y_max), self.status)
-        self.children[SW] = QuadNode(Region(region.x_min,   region.y_min,   self.origin[X], self.origin[Y]), self.status)
-        self.children[SE] = QuadNode(Region(self.origin[X], region.y_min,   region.x_max,   self.origin[Y]), self.status)
+        self.children[NE] = QuadNode(self.computeQuadrant(NE), self.status)
+        self.children[NW] = QuadNode(self.computeQuadrant(NW), self.status)
+        self.children[SW] = QuadNode(self.computeQuadrant(SW), self.status)
+        self.children[SE] = QuadNode(self.computeQuadrant(SE), self.status)
     
     def quadrant(self, pt):
         """Determine quadrant in which point exists. Closed intervals on quadrants I (NE) and III (SW)."""
@@ -205,7 +203,6 @@ class QuadNode:
                 return NW
             else:
                 return SW
-     
      
     def preorder(self):
         """Pre order traversal of tree rooted at given node."""
@@ -289,7 +286,7 @@ class QuadTree:
             # This gives QUADNODES which we need to check for FULL status.
             for e in self.root.preorder():
                 if e.isFull():
-                    # yield each one at a time.
+                    # yield each pt in region, one at a time.
                     for x in range(e.region.x_min, e.region.x_max):
                         for y in range(e.region.y_min, e.region.y_max):
                             yield (x,y)

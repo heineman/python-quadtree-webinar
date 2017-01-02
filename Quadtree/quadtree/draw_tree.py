@@ -6,7 +6,8 @@
     Accepts any structure that has 'children' list attribute with up to
     four child nodes.
 
-    Note: Before use, must externally set the small/large fonts to use.
+    Note: Before use, must externally set the small/large fonts to use, otherwise
+    the default one is likely too small to see.
 """
 
 from quadtree.quad import NE, NW, SW, SE
@@ -21,51 +22,6 @@ node_h = 25
 # things happen.
 magx = 30
 magy = 80
-
-def layoutDrawTree(tree):
-    """Compute the layout for a DrawTree."""
-    setupDrawTree(tree)
-    addmodsDrawTree(tree)
-    return tree
-
-def setupDrawTree(tree, depth=0, nexts=None):
-    """Recursively assign (x,y) abstract values to each node in DrawTree."""
-    if nexts is None:  nexts  = defaultdict(lambda: 0)
-
-    x_min = 99999
-    x_max = -99999
-    
-    # place self initially before children, and update next coordinate for node
-    # on this same depth level (might not be a direct sibling)
-    tree.x = nexts[depth]
-    nexts[depth] += 2
-    tree.y = depth
-    
-    # recursively process all descendant nodes, and determine min/max of direct children.
-    for quad in range(len(tree.children)):
-        if tree.children[quad] is not None:
-            setupDrawTree(tree.children[quad], depth+1, nexts)
-            x_min = min(x_min, tree.children[quad].x)
-            x_max = max(x_max, tree.children[quad].x)
-
-    # Move self to be middle of children. If no children, neutral. When 'mod' is 
-    # set, all descendants of a node are shifted right (including that node). Otherwise
-    # you only need to shift node to be in proper position. 
-    child_mid = (x_min + x_max) / 2.0
-    if child_mid < tree.x:
-        tree.mod = tree.x - child_mid
-    elif child_mid > tree.x:
-        tree.x = child_mid
-   
-
-def addmodsDrawTree(tree, modsum=0):
-    """Recursively offset nodes horizontally by computed 'mod' values."""
-    tree.x += modsum
-    modsum += tree.mod
-
-    for quad in range(len(tree.children)):
-        if tree.children[quad] is not None:
-            addmodsDrawTree(tree.children[quad], modsum)            
 
 class DrawTree(object):
     """
@@ -94,13 +50,65 @@ class DrawTree(object):
             if qtnode.children[quad] is not None:
                 self.children[quad] = DrawTree(qtnode.children[quad], depth+1, label)
 
+    def assign(self, depth=0, nexts=None):
+        """Recursively assign (x,y) abstract values to each node in DrawTree."""
+        # use defaultdict (with default of 0) for each level to start at left.
+        if nexts is None:  nexts  = defaultdict(int)
+    
+        x_min = 99999
+        x_max = -99999
+        
+        # place self initially before children, and update next coordinate for node
+        # on this same depth level (might not be a direct sibling)
+        self.x = nexts[depth]
+        nexts[depth] += 2
+        self.y = depth
+        
+        # recursively process all descendant nodes, and determine min/max of direct children.
+        for quad in range(len(self.children)):
+            if self.children[quad] is not None:
+                self.children[quad].assign(depth+1, nexts)
+                x_min = min(x_min, self.children[quad].x)
+                x_max = max(x_max, self.children[quad].x)
+    
+        # Move self to be middle of children. If no children, do nothing. When 'mod' is 
+        # set, all descendants of a node are shifted right (including that node). Otherwise
+        # you only need to shift self node to be in proper position. 
+        child_mid = (x_min + x_max) / 2.0
+        if child_mid < self.x:
+            self.mod = self.x - child_mid
+        elif child_mid > self.x:
+            self.x = child_mid
+
+    def adjust(self, modsum=0):
+        """Recursively offset nodes horizontally by computed 'mod' values."""
+        self.x += modsum
+        modsum += self.mod
+
+        for quad in range(len(self.children)):
+            if self.children[quad] is not None:
+                self.children[quad].adjust(modsum)          
+
     def middle(self):
         """compute mid point for DrawTree node."""
         return (self.x*magx + node_w/2,
                 self.y*magy + node_h/2)
 
-    def format(self, canvas, orientation):
-        """Crete visual representation of node on canvas."""
+    def layout(self):
+        """
+        Compute the layout for a DrawTree. In first recursive traversal, assign
+        abstract coordinates for each node. In second traversal, shift nodes, as 
+        needed, based on orientation with regards to their children.
+        """
+        self.assign()
+        self.adjust()
+
+    def format(self, canvas, orientation=-1):
+        """
+        Create visual representation of node on canvas.
+        
+        Represent children node with inner colored rectangle as visual cue.
+        """
         for quad in range(len(self.children)):
             if self.children[quad] is not None:
                 mid = self.middle()
@@ -142,7 +150,7 @@ class DrawTree(object):
                                     self.y*magy+node_h,
                                     fill='#ccffff')
 
-        # use small font for 10 and higher.
+        # use small font for values 10 and higher.
         font = DrawTree.largeFont
         text = ''
         if self.label:
@@ -151,7 +159,7 @@ class DrawTree(object):
             if ival > 9:
                 font = DrawTree.smallFont
         
-        canvas.create_text(self.x*magx+node_w/2,
+        canvas.create_text(self.x*magx + node_w/2,
                            self.y*magy + node_h/2,
                            font=font,
                            width=node_w, text=text)

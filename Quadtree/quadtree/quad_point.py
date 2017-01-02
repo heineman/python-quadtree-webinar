@@ -146,7 +146,6 @@ class QuadNode:
         elif q == SE:
             return QuadNode(Region(self.origin[X], region.y_min,   region.x_max,   self.origin[Y]))
         
-
     def subdivide(self):
         """Add up to four children nodes to node and reassign existing points."""
         self.children = [None]*4
@@ -172,7 +171,6 @@ class QuadNode:
                 return NW
             else:
                 return SW
-     
      
     def preorder(self):
         """Pre order traversal of tree rooted at given node."""
@@ -227,21 +225,6 @@ class QuadTree:
             return False
         
         self.root = self.root.remove(pt)
-#         n = self.root
-#         while n:
-#             if n.points:
-#                 for i in range(len(n.points)):
-#                     if n.points[i] == pt:
-#                         del n.points[i]
-#                         return True
-# 
-#             q = n.quadrant(pt)
-#             if n.children[q] is None:
-#                 return False
-#             else:
-#                 n = n.children[q]
-#     
-#         return False
     
     def __contains__(self, pt):
         """Check whether exact point appears in Quadtree."""
