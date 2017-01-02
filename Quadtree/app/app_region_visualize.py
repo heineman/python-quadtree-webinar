@@ -1,5 +1,5 @@
 """
-    Visualizes region-based QuadTree structures
+    Visualizes region-based QuadTree structures.
     
     Left mouse adds point or removes it.
     
@@ -25,7 +25,7 @@ class QuadTreePointApp:
     def __init__(self, master, factor):
         """App for creating point-based quadtree dynamically."""
         
-        master.title("Click to add/remove points:" + str(factor) + "x" + str(factor)) 
+        master.title("Click to add/remove points: [0,0] - (" + str(512//factor) + "," + str(512//factor) + ")") 
         self.master = master 
         self.factor = factor
         

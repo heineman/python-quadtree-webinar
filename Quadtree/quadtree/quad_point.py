@@ -50,7 +50,7 @@ def larger2k(n):
         return 2**math.ceil(math.log2(n))
 
 def containsPoint(region, point):
-    """Returns True if point contained in rectangle, closed on min and open on max."""
+    """Returns True if point contained in region, closed on min and open on max."""
     if point[X] < region.x_min: return False
     if point[X] >= region.x_max: return False
     if point[Y] < region.y_min: return False
