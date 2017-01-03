@@ -4,7 +4,8 @@
     Layout inspired by https://llimllib.github.io/pymag-trees/
     
     Accepts any structure that has 'children' list attribute with up to
-    four child nodes.
+    four child nodes. May still produce some layouts that have overlapping nodes
+    but works for the most part.
 
     Note: Before use, must externally set the small/large fonts to use, otherwise
     the default one is likely too small to see.
@@ -50,11 +51,9 @@ class DrawTree(object):
             if qtnode.children[quad] is not None:
                 self.children[quad] = DrawTree(qtnode.children[quad], depth+1, label)
 
-    def assign(self, depth=0, nexts=None):
+    def assign(self, depth, nexts):
         """Recursively assign (x,y) abstract values to each node in DrawTree."""
-        # use defaultdict (with default of 0) for each level to start at left.
-        if nexts is None:  nexts  = defaultdict(int)
-    
+        
         x_min = 99999
         x_max = -99999
         
@@ -100,7 +99,9 @@ class DrawTree(object):
         abstract coordinates for each node. In second traversal, shift nodes, as 
         needed, based on orientation with regards to their children.
         """
-        self.assign()
+        # use defaultdict (with default of 0) for each level to start at left.
+        nexts  = defaultdict(int)
+        self.assign(0, nexts)
         self.adjust()
 
     def format(self, canvas, orientation=-1):

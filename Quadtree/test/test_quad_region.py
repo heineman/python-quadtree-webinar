@@ -1,6 +1,6 @@
 import unittest
 
-from quadtree.quad_region import QuadTree
+from quadtree.quad_region import QuadTree, NE, NW, SW, SE
 from adk.region import Region
 import random
 
@@ -76,6 +76,60 @@ class TestBSTMethods(unittest.TestCase):
         
         self.assertFalse((0, 0) in self.qt)
         self.assertTrue (self.qt.root is None)
+        
+    def test_presentation(self):
+        self.qt.add((7,4))
+        self.qt.add((3,4))
+        self.qt.add((4,6))
+        self.qt.add((6,6))
+        self.qt.add((5,1))
+        self.qt.add((4,3))
+        self.qt.add((7,7))
+        self.qt.add((2,5))
+        self.qt.add((5,3))
+        self.qt.add((4,5))
+        self.qt.add((7,6))
+        self.qt.add((5,2))
+        self.qt.add((7,5))
+        self.qt.add((4,4))
+        self.qt.add((5,4))
+        self.qt.add((4,7))
+        self.qt.add((5,7))
+        self.qt.add((5,6))
+        self.qt.add((6,5))
+        self.qt.add((2,4))
+        self.qt.add((3,5))
+        self.qt.add((6,7))
+        self.qt.add((6,4))
+        self.qt.add((5,5))
+        self.qt.add((4,2))
+        
+        # Top-level
+        self.assertTrue(self.qt.root.children[SW] == None)
+        self.assertTrue(self.qt.root.children[NE].isFull())
+        
+        # second level
+        self.assertTrue(self.qt.root.children[NW].children[SE].isFull())
+        self.assertTrue(self.qt.root.children[SE].children[NW].isFull())
+        
+        # third level
+        self.assertTrue(self.qt.root.children[SE].children[SW].children[NE].isPoint())
+        self.assertTrue(self.qt.root.children[SE].children[SW].children[NE].isFull())
+        
+    def test_presentation_odd(self):
+        self.qt.add((3,4))
+        self.qt.add((4,3))
+        
+        # Top-level
+        self.assertTrue(self.qt.root.children[NE] == None)
+        self.assertTrue(self.qt.root.children[SW] == None)
+        
+        # last level
+        self.assertTrue(self.qt.root.children[NW].children[SE].children[SE].isPoint())
+        self.assertTrue(self.qt.root.children[NW].children[SE].children[SE].isFull())
+        
+        self.assertTrue(self.qt.root.children[SE].children[NW].children[NW].isPoint())
+        self.assertTrue(self.qt.root.children[SE].children[NW].children[NW].isFull())
         
     def test_checkerboard(self):
         for i in range(8):
