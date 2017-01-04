@@ -134,7 +134,7 @@ class QuadTreeFixedApp:
             self.visit(n)
             
     def updateLocations(self):
-        """Move all circles, reconstruct Quadtree and repaint."""
+        """Move all circles, reconstruct QuadTree and repaint."""
         if not self.paused:
             self.master.after(frameDelay, self.updateLocations)
 

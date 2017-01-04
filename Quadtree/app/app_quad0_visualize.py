@@ -63,7 +63,7 @@ class QuadTreePointApp:
         self.viz.clear()
         
     def visit (self, node):
-        """ Visit nodes recursively."""
+        """Visit nodes recursively."""
         if node == None: 
             return
 

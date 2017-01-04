@@ -71,7 +71,7 @@ class QuadTreeFixedApp:
         self.visit(self.tree.root)
 
     def visit (self, node):
-        """ Visit nodes recursively."""
+        """Visit nodes recursively."""
         if node == None: 
             return
 

@@ -42,7 +42,7 @@ class SkeletonAnimationApp():
         self.visit()
 
     def visit (self):
-        """ Visit structure and represent graphically."""
+        """Visit structure and represent graphically."""
         self.canvas.delete(ALL)
         last = None
         for shape in self.events:

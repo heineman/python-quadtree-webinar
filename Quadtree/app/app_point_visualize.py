@@ -75,7 +75,7 @@ class QuadTreePointApp:
         self.viz.clear()
         
     def visit (self, node):
-        """ Visit nodes recursively."""
+        """Visit nodes recursively."""
         if node == None: 
             return
 
@@ -109,6 +109,6 @@ class QuadTreePointApp:
             
 if __name__ == '__main__':
     root = Tk()
-    app = QuadTreePointApp(root, 64)     # pixels are 8x8 in size
+    app = QuadTreePointApp(root, 64)     # pixels are 8x8 in size (or 512/64)
     app.viz = VisualizationWindow(root, label)
     root.mainloop()

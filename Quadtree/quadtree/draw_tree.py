@@ -57,8 +57,10 @@ class DrawTree(object):
                 self.children[quad] = DrawTree(qtnode.children[quad], depth+1, label)
 
     def assign(self, depth, nexts):
-        """Recursively assign (x,y) abstract values to each node in DrawTree."""
-        
+        """
+        Recursively assign (x,y) abstract values to each node in DrawTree.
+        nexts is dictionary for next x-coordinate on given depth.
+        """
         x_min = 99999
         x_max = -99999
         
@@ -76,41 +78,26 @@ class DrawTree(object):
                 x_max = max(x_max, self.children[quad].x)
     
         # Move self to be middle of children. If no children, do nothing. When 'mod'
-        # is set, all descendants of a node are shifted right (including that node).
-        # Otherwise you only need to shift self node to be in proper position. 
-        child_mid = (x_min + x_max) / 2.0
-        if child_mid < self.x:
-            self.mod = self.x - child_mid
-        elif child_mid > self.x:
-            self.x = child_mid
-
-    def adjust0(self, modsum=0):
-        """ORIGINAL which led to cross-over of cousin noeds."""
-        self.x += modsum   ###ON
-        modsum += self.mod
-
-        for quad in range(len(self.children)):
-            if self.children[quad] is not None:
-                self.children[quad].adjust(modsum)          
-
-    def adjust1(self, modsum=0):
-        """Modified, which left-justified for poor layout."""
-        modsum += self.mod
-
-        for quad in range(len(self.children)):
-            if self.children[quad] is not None:
-                modsum += self.children[quad].mod   
-                self.children[quad].adjust(modsum)          
+        # is set, all descendants of a node are shifted right during adjust().
+        # Otherwise you only need to shift self node to be in proper position 
+        # relative to its children.
+        if x_min != 99999:
+            child_mid = (x_min + x_max) / 2.0
+            if child_mid < self.x:
+                self.mod = self.x - child_mid
+                nexts[depth+1] += self.mod       # Affects next children placement
+            elif child_mid > self.x:
+                self.x = child_mid
+                nexts[depth] = max(nexts[depth] + 2, self.x + 2)
 
     def adjust(self, modsum=0):
-        """Recursively offset nodes horizontally by computed 'mod' values."""
-        self.x += modsum  
-        
+        """Adjust descendants based on computed 'mod' shift in recursion."""
+        self.x += modsum
+        modsum += self.mod
+
         for quad in range(len(self.children)):
             if self.children[quad] is not None:
-                modsum = self.children[quad].adjust(modsum)
-                          
-        return modsum
+                self.children[quad].adjust(modsum)       
 
     def middle(self):
         """Compute mid point for DrawTree node."""
@@ -125,7 +112,7 @@ class DrawTree(object):
         """
         # use defaultdict (with default of 0) for each level to start at left.
         self.assign(0, defaultdict(int))
-        self.adjust()
+        self.adjust(0)
 
     def format(self, canvas, orientation=-1):
         """

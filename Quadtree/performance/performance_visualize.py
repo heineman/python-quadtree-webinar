@@ -6,7 +6,6 @@
     Max tree size is 512x512 and scale factor determines the size of
     the individual points in the tree in pixels. For example, factor=64
     means that there are 8x8 points.
-    
 """
 
 from tkinter import Tk, ALL
@@ -17,7 +16,11 @@ from app.app_point_visualize import QuadTreePointApp, label
 # designed to test edge cases. I've left the skeleton code here
 
 def addPoints():
-    """Add points which caused layout to become confused."""
+    """
+    Add points which caused layout to become criss-crossed. This case identified
+    a key step in the algorithm, namely to update the 'nexts' placemenet of 
+    child nodes once the self.mod was computed.
+    """
     app.tree.add([0,7])
     app.tree.add([4,7])
     
@@ -31,8 +34,7 @@ def addPoints():
 
 if __name__ == '__main__':
     root = Tk()
-    app = QuadTreePointApp(root, 64)     # pixels are 8x8 in size
+    app = QuadTreePointApp(root, 64)     # pixels are 8x8 in size (or 512/64)
     app.viz = VisualizationWindow(root, label)
     root.after(250, addPoints)
     root.mainloop()
-    

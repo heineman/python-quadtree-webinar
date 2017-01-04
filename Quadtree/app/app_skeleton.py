@@ -32,7 +32,7 @@ class SkeletonApp():
         self.visit()
 
     def visit (self):
-        """ Visit structure and represent graphically."""
+        """Visit structure and represent graphically."""
         self.canvas.delete(ALL)
         for shape in self.clicked:
             self.canvas.create_oval(shape[X] - 4, shape[Y] - 4, 

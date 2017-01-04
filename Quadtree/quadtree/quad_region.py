@@ -157,7 +157,7 @@ class QuadNode:
         return newSelf
 
     def childrenFull(self):
-        """Determine if all children are full.""" 
+        """Determine if all children are full."""
         if self.children[NE] is None or not self.children[NE].isFull(): return False
         if self.children[NW] is None or not self.children[NW].isFull(): return False
         if self.children[SW] is None or not self.children[SW].isFull(): return False
@@ -166,7 +166,7 @@ class QuadNode:
         return True
     
     def childrenNull(self):
-        """Determine if all children are None.""" 
+        """Determine if all children are None."""
         if self.children[NE] is not None: return False
         if self.children[NW] is not None: return False
         if self.children[SW] is not None: return False
