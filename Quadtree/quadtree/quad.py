@@ -100,7 +100,7 @@ class QuadNode:
         self.circles = []
     
     def collide(self, circle):
-        """Yield circles in leaf that intersect with circle."""
+        """Yield circles that intersect with circle."""
         
         # Circle must intersect
         if intersectsCircle (self.region, circle):
@@ -113,8 +113,8 @@ class QuadNode:
             if self.children[NE] == None: return
             
             for q in self.quadrants(circle):
-                for s in self.children[q].collide(circle):
-                    yield s
+                for c in self.children[q].collide(circle):
+                    yield c
  
     def add(self, circle):
         """Add circle to the QuadNode, subdividing as needed."""
@@ -268,5 +268,7 @@ class QuadTree:
     def __iter__(self):
         """Traverse elements in the tree."""
         if self.root:
-            for e in self.root.preorder():
-                yield e
+            for n in self.root.preorder():
+                if n.points:
+                    for pt in n.points:
+                        yield pt

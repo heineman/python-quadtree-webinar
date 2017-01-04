@@ -275,10 +275,7 @@ class QuadTree:
                 return True
 
             q = n.quadrant(pt)
-            if n.children[q] is None:
-                return False
-            else:
-                n = n.children[q]
+            n = n.children[q]
     
         return False
     
@@ -286,11 +283,11 @@ class QuadTree:
         """Pre-order traversal of elements in the tree."""
         if self.root:
             # This gives QUADNODES which we need to check for FULL status.
-            for e in self.root.preorder():
-                if e.isFull():
+            for n in self.root.preorder():
+                if n.isFull():
                     # yield each pt in region, one at a time.
-                    for x in range(e.region.x_min, e.region.x_max):
-                        for y in range(e.region.y_min, e.region.y_max):
+                    for x in range(n.region.x_min, n.region.x_max):
+                        for y in range(n.region.y_min, n.region.y_max):
                             yield (x,y)
-                elif e.isPoint():
-                    yield (e.region.x_min, e.region.y_min)
+                elif n.isPoint():
+                    yield (n.region.x_min, n.region.y_min)

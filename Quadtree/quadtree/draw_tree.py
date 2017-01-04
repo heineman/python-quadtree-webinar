@@ -1,5 +1,5 @@
 """
-    Perform visual layout of quadtree in Tk canvas.
+    Perform visual layout of QuadTree in Tk canvas.
 
     Layout inspired by https://llimllib.github.io/pymag-trees/
     
@@ -29,9 +29,12 @@ node_h = 25
 magx = 30
 magy = 80
 
+# Inset drawing by 2 pixels on top and left so nodes fully appear
+inset = 2
+
 class DrawTree(object):
     """
-    Abstract representation of a quadtree, in preparation for visualization.
+    Abstract representation of a QuadTree, in preparation for visualization.
     Each DrawTree node is assigned an (x,y) integer pair where y reflects 
     the depth of the node (0=root) and x reflects the offset position within 
     that depth.
@@ -42,6 +45,7 @@ class DrawTree(object):
     # must be set externally after tk is initialized.
     smallFont = None
     largeFont = None
+    
     
     def __init__(self, qtnode, depth=0, label=None):
         """Recursively construct DrawTree structure to parallel quadtree node."""
@@ -77,15 +81,18 @@ class DrawTree(object):
                 x_min = min(x_min, self.children[quad].x)
                 x_max = max(x_max, self.children[quad].x)
     
-        # Move self to be middle of children. If no children, do nothing. When 'mod'
-        # is set, all descendants of a node are shifted right during adjust().
-        # Otherwise you only need to shift self node to be in proper position 
-        # relative to its children.
+        # If no children, do nothing. Key idea is that self.x should be 
+        # centered over children. If child_mid is to our left, must modify
+        # modify their placement by difference (i.e., mod = self.x - child_mid).
+        # This update takes place later during adjust recursion method. In
+        # preparation, update nexts[depth+1] to make room.
+        # If child_mid is to our right, then we only need to move self into 
+        # position and update nexts[depth] to leave room for next nodes @ level.
         if x_min != 99999:
             child_mid = (x_min + x_max) / 2.0
             if child_mid < self.x:
                 self.mod = self.x - child_mid
-                nexts[depth+1] += self.mod       # Affects next children placement
+                nexts[depth+1] += self.mod       
             elif child_mid > self.x:
                 self.x = child_mid
                 nexts[depth] = max(nexts[depth] + 2, self.x + 2)
@@ -101,8 +108,8 @@ class DrawTree(object):
 
     def middle(self):
         """Compute mid point for DrawTree node."""
-        return (self.x*magx + node_w/2,
-                self.y*magy + node_h/2)
+        return (self.x * magx + node_w/2,
+                self.y * magy + node_h/2)
 
     def layout(self):
         """
@@ -124,7 +131,8 @@ class DrawTree(object):
             if self.children[quad] is not None:
                 mid = self.middle()
                 child = self.children[quad].middle()
-                canvas.create_line(mid[0], mid[1], child[0], child[1])
+                canvas.create_line(inset + mid[0],   inset + mid[1], 
+                                   inset + child[0], inset + child[1])
                 self.children[quad].format(canvas, quad)
 
         color = 'white'
@@ -132,33 +140,36 @@ class DrawTree(object):
             ival = self.label(self.node)
             if ival == 0:
                 color = 'gray'
-        canvas.create_rectangle(self.x*magx, self.y*magy,
-                                self.x*magx+node_w, self.y*magy+node_h, fill=color)
+        canvas.create_rectangle(inset + self.x * magx, 
+                                inset + self.y * magy,
+                                inset + self.x * magx+node_w, 
+                                inset + self.y * magy+node_h, 
+                                fill=color)
 
         # draw corner in faint colors
         if orientation == NW:
-            canvas.create_rectangle(self.x*magx,
-                                    self.y*magy,
-                                    self.x*magx+node_w/2, 
-                                    self.y*magy+node_h/2,
+            canvas.create_rectangle(inset + self.x * magx,
+                                    inset + self.y * magy,
+                                    inset + self.x * magx + node_w/2, 
+                                    inset + self.y * magy + node_h/2,
                                     fill='#ffcccc')
         elif orientation == NE:
-            canvas.create_rectangle(self.x*magx+node_w/2,
-                                    self.y*magy,
-                                    self.x*magx+node_w, 
-                                    self.y*magy+node_h/2,
+            canvas.create_rectangle(inset + self.x * magx + node_w/2,
+                                    inset + self.y * magy,
+                                    inset + self.x * magx + node_w, 
+                                    inset + self.y * magy + node_h/2,
                                     fill='#ccffcc')
         elif orientation == SW:
-            canvas.create_rectangle(self.x*magx,
-                                    self.y*magy+node_h/2,
-                                    self.x*magx+node_w/2, 
-                                    self.y*magy+node_h,
+            canvas.create_rectangle(inset + self.x * magx,
+                                    inset + self.y * magy + node_h/2,
+                                    inset + self.x * magx + node_w/2, 
+                                    inset + self.y * magy + node_h,
                                     fill='#ccccff')
         elif orientation == SE:
-            canvas.create_rectangle(self.x*magx+node_w/2,
-                                    self.y*magy+node_h/2,
-                                    self.x*magx+node_w, 
-                                    self.y*magy+node_h,
+            canvas.create_rectangle(inset + self.x * magx + node_w/2,
+                                    inset + self.y * magy + node_h/2,
+                                    inset + self.x * magx + node_w, 
+                                    inset + self.y * magy + node_h,
                                     fill='#ccffff')
 
         # use small font for values 10 and higher.
@@ -170,8 +181,8 @@ class DrawTree(object):
             if ival > 9:
                 font = DrawTree.smallFont
         
-        canvas.create_text(self.x*magx + node_w/2,
-                           self.y*magy + node_h/2,
+        canvas.create_text(inset + self.x * magx + node_w/2,
+                           inset + self.y * magy + node_h/2,
                            font=font,
                            width=node_w, text=text)
 

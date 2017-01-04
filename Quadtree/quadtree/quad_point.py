@@ -235,16 +235,15 @@ class QuadTree:
                 return True
 
             q = n.quadrant(pt)
-            if n.children[q] is None:
-                return False
-            else:
-                n = n.children[q]
+            n = n.children[q]
     
         return False
     
     def __iter__(self):
-        """Pre-order traversal of elements in the tree."""
+        """Pre-order traversal of points in the tree."""
         if self.root:
-            for e in self.root.preorder():
-                yield e
+            for n in self.root.preorder():
+                if n.points:
+                    for pt in n.points:
+                        yield pt
         

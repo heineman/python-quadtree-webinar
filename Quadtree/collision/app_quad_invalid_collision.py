@@ -1,15 +1,18 @@
 """
-    Demonstration application for collision detection. Each shape added is a 
-    circle with given (x,y) point and random radius.
+    Demonstration application that ALMOST solves case with circles of fixed radius.
+    The problem is that it only identifies collisions in same leaf node, since 
+    that is where point-based quadtree stores its points.
+    
+    The other problem is that when it comes to collision detection, we can't
+    represent a 2D-circle by a single point. 
     
     Left mouse adds circle. All collisions remain with each mouse click which 
     means we only need to check for collisions against the newly added circle.
 """
 
-import random
 from tkinter import Tk, Canvas, ALL
 
-from quadtree.quad import QuadTree, RADIUS, MULTIPLE 
+from quadtree.quad_point import QuadTree, RADIUS
 from adk.region import Region, minValue, maxValue, X, Y
 
 # Attributes for Circle
@@ -17,19 +20,38 @@ from adk.region import Region, minValue, maxValue, X, Y
 # 1 (Y) is its y-coordinate
 # 2 (RADIUS) is its radius
 # 3 (HIT) records whether involved in a collision
-# 4 (MULTIPLE) records whether circle is too big to fit in leaf node in quadtree
 HIT = 3      
 
-# Parameters for size of random circles       
-MaxRadius = 30
-MinRadius = 10
+# All circles have radius of 10 pixels
+Radius = 10
 
-class QuadTreeFixedApp:
+def defaultCollision(c1, c2):
+    """Two circles intersect if distance between centers is between the sum and the difference of radii."""
+    centerDistance = (c1[X] - c2[X])**2 + (c1[Y] - c2[Y])**2
+    sumSquared = (c1[RADIUS]+c2[RADIUS])**2
+    if centerDistance > sumSquared: return False
+    return True
+ 
+def collide(node, circle):
+    """Yield circles in point quadtree that intersect with circle."""
+    if node != None:
+        # if we have circles, must check them
+        if node.points:
+            for c in node.points:
+                if defaultCollision(c, circle):
+                    yield c
+        
+        # Find sub-quadrant into which to check further 
+        q = node.quadrant(circle)
+        for c in collide(node.children[q], circle):
+            yield c
+
+class QuadTreeInvalidApp:
     
     def __init__(self, master):
-        """App for creating Quad tree dynamically with fixed circles that detect collisions."""
+        """App for creating Quad tree dynamically with fixed circles that ALMOST ALWAYS detect collisions."""
         
-        master.title("Click to add fixed circles for QuadTree collision detection.") 
+        master.title("Click to add fixed circles for ALMOST detecting collisions.") 
         self.master = master 
         
         # QuadTree holds the events
@@ -55,10 +77,10 @@ class QuadTreeFixedApp:
          
     def click(self, event):
         """Add circle to QuadTree with random radius."""
-        circle = [event.x, self.toCartesian(event.y), random.randint(MinRadius, MaxRadius), False, False]
+        circle = [event.x, self.toCartesian(event.y), Radius, False, False]
         
         # Mark these circles to have their HIT status set to True
-        for circ in self.tree.collide(circle):
+        for circ in collide(self.tree.root, circle):
             circ[HIT] = True
             circle[HIT] = True
         
@@ -85,19 +107,19 @@ class QuadTreeFixedApp:
                                 dash=(2, 4)) 
         self.canvas.create_line(node.origin[X], self.toTk(r.y_min), node.origin[X], self.toTk(r.y_max),
                                 dash=(2, 4))
-         
-        for circle in node.circles:
-            markColor = 'black'
-            if circle[MULTIPLE]: markColor = 'blue'
-            if circle[HIT]: markColor = 'red'
-            self.canvas.create_oval(circle[X] - circle[RADIUS], self.toTk(circle[Y]) - circle[RADIUS], 
-                                 circle[X] + circle[RADIUS], self.toTk(circle[Y]) + circle[RADIUS], 
-                                 fill=markColor)
+        
+        if node.points: 
+            for circle in node.points:
+                markColor = 'black'
+                if circle[HIT]: markColor = 'red'
+                self.canvas.create_oval(circle[X] - circle[RADIUS], self.toTk(circle[Y]) - circle[RADIUS], 
+                                     circle[X] + circle[RADIUS], self.toTk(circle[Y]) + circle[RADIUS], 
+                                     fill=markColor)
         
         for n in node.children:
             self.visit(n)
             
 if __name__ == '__main__':
     root = Tk()
-    app = QuadTreeFixedApp(root)
+    app = QuadTreeInvalidApp(root)
     root.mainloop()

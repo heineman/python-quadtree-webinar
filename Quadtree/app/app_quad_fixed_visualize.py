@@ -2,8 +2,7 @@
     Demonstration application for collision detection. Each shape
     added is a random circle.
     
-    Left mouse adds circle.
-    
+    Left mouse adds circle. 
 """
 
 import random
@@ -23,7 +22,7 @@ from quadtree.visualize import VisualizationWindow
 HIT = 3      
 
 # Parameters for size of random circles       
-MaxRadius = 30
+MaxRadius = 10
 MinRadius = 10
 
 def label(node):
