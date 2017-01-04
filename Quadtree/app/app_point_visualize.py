@@ -90,12 +90,12 @@ class QuadTreePointApp:
                                 self.toTk(self.factor * node.origin[Y]),
                                 self.factor * r.x_max,
                                 self.toTk(self.factor * node.origin[Y]),
-                                fill='black', dash=(2, 4)) 
+                                dash=(2, 4)) 
         self.canvas.create_line(self.factor * node.origin[X],
                                 self.toTk(self.factor * r.y_min),
                                 self.factor * node.origin[X],
                                 self.toTk(self.factor * r.y_max),
-                                fill='black', dash=(2, 4))
+                                dash=(2, 4))
          
         if node.points:
             for pt in node.points:
@@ -107,8 +107,8 @@ class QuadTreePointApp:
         for n in node.children:
             self.visit(n)
             
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = Tk()
-    app = QuadTreePointApp(root, 64)
+    app = QuadTreePointApp(root, 64)     # pixels are 8x8 in size
     app.viz = VisualizationWindow(root, label)
     root.mainloop()

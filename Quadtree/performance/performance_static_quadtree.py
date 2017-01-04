@@ -7,23 +7,23 @@ def performance():
     numTrials = 10
     maxRadius = 10
      
-    print ("n", "Naive Time", "Quadtree Time")
-    while n <= 8192:
+    print ('n', 'Naive Time', 'Quadtree Time')
+    while n <= 1024:
         naive_total = quadtree_total = 0
         
         circles = []
         targets = []
         for _ in range(n):
             circle = [random.randint(0,512), random.randint(0,512), random.randint(4, maxRadius), False, False, 0, 0]
-            circles.append (circle)
+            circles.append(circle)
             
         for _ in range(n):
             target = [random.randint(0,512), random.randint(0,512), random.randint(4, maxRadius), False, False, 0, 0]
-            targets.append (target)
+            targets.append(target)
             
         # Construct circles as the initial set and a collection of target circles to be
         # used to check for intersections with the original set. 
-        setup= '''
+        setup='''
 from quadtree.quad import QuadTree
 from adk.region import Region
 targets = []
@@ -41,7 +41,8 @@ for s in circles:
 '''
 
         # Time naive O(m*n) algorithm for detecting collisions between m targets and n circles. 
-        naive_total += min(timeit.Timer('''
+        naive_total += min(timeit.Timer(
+'''
 from quadtree.quad import defaultCollision
 collisions = []
 for i in range(len(targets)):
@@ -51,7 +52,8 @@ for i in range(len(targets)):
 #print ("numCol:" + str(len(collisions)))''', setup=setup).repeat(5,numTrials))
            
         # Time algorithm using Quadtree of n circles against which m targets are checked.
-        quadtree_total += min(timeit.Timer('''
+        quadtree_total += min(timeit.Timer(
+'''
 from quadtree.quad import defaultCollision
 collisions = []
 for target in targets:
@@ -64,3 +66,15 @@ for target in targets:
         
 if __name__ == '__main__':
     performance()
+
+# Sample Run:
+"""
+n Naive Time Quadtree Time
+16 0.6529 0.5322
+32 1.6690 1.2049
+64 6.6617 2.8688
+128 26.5539 8.7543
+256 106.1730 21.5697
+512 430.5385 74.9178
+1024 1710.8403 252.3014
+"""

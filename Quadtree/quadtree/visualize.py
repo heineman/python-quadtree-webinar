@@ -12,6 +12,10 @@ class VisualizationWindow:
         self.frame = Toplevel(width=1024, height=512)
         self.canvas = Canvas(self.frame, width=1024, height=512)        
 
+        # Initialize appropriate fonts to use
+        DrawTree.smallFont = Font(family='Times', size='14')
+        DrawTree.largeFont = Font(family='Times', size='24')
+        
         self.frame.title("QuadTree Visualization")
         self.canvas.pack()
         self.label = label
@@ -25,10 +29,6 @@ class VisualizationWindow:
         self.canvas.delete(ALL)
         if tree is None:
             return
-        
-        # Initialize appropriate fonts to use
-        DrawTree.smallFont = Font(family='Times', size='14')
-        DrawTree.largeFont = Font(family='Times', size='24')
         
         dt = DrawTree(tree, label=self.label)
         dt.layout()

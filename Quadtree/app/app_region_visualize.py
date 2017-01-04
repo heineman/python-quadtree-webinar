@@ -17,7 +17,7 @@ from adk.region import Region, minValue, maxValue, X, Y
 from quadtree.visualize import VisualizationWindow
 
 def label(node):
-    """return size as label."""
+    """Return size as label."""
     return node.region.x_max - node.region.x_min
 
 class QuadTreePointApp:
@@ -73,7 +73,7 @@ class QuadTreePointApp:
         self.viz.clear()
         
     def visit (self, node):
-        """ Visit nodes recursively."""
+        """Visit nodes recursively."""
         if node == None: 
             return
 
@@ -88,12 +88,12 @@ class QuadTreePointApp:
                                 self.toTk(self.factor * node.origin[Y]),
                                 self.factor * r.x_max,
                                 self.toTk(self.factor * node.origin[Y]),
-                                fill='black', dash=(2, 4)) 
+                                dash=(2, 4)) 
         self.canvas.create_line(self.factor * node.origin[X],
                                 self.toTk(self.factor * r.y_min),
                                 self.factor * node.origin[X],
                                 self.toTk(self.factor * r.y_max),
-                                fill='black', dash=(2, 4))
+                                dash=(2, 4))
          
         if node.isPoint() or node.isFull():
             pt = [node.region.x_min, node.region.y_min]
@@ -106,7 +106,7 @@ class QuadTreePointApp:
         for n in node.children:
             self.visit(n)
             
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = Tk()
     app = QuadTreePointApp(root, 64)     # parameter is size of each square by pixels
     app.viz = VisualizationWindow(root, label)

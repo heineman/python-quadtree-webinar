@@ -69,33 +69,33 @@ class QuadTreePointApp:
 
         # draw rectangular region with criss-crossed hashed lines 
         r = node.region
-        self.canvas.create_rectangle(64*r.x_min,
-                                     64*self.toTk(r.y_min),
-                                     64*r.x_max, 
-                                     64*self.toTk(r.y_max))
+        self.canvas.create_rectangle(64 * r.x_min,
+                                     64 * self.toTk(r.y_min),
+                                     64 * r.x_max, 
+                                     64 * self.toTk(r.y_max))
          
-        self.canvas.create_line(64*r.x_min,
-                                self.toTk(64*node.origin[Y]),
-                                64*r.x_max,
-                                self.toTk(64*node.origin[Y]),
+        self.canvas.create_line(64 * r.x_min,
+                                self.toTk(64 * node.origin[Y]),
+                                64 * r.x_max,
+                                self.toTk(64 * node.origin[Y]),
                                 dash=(2,4)) 
-        self.canvas.create_line(64*node.origin[X],
-                                self.toTk(64*r.y_min),
-                                64*node.origin[X],
-                                self.toTk(64*r.y_max),
+        self.canvas.create_line(64 * node.origin[X],
+                                self.toTk(64 * r.y_min),
+                                64 * node.origin[X],
+                                self.toTk(64 * r.y_max),
                                 dash=(2,4))
          
         if node.points:
             for pt in node.points:
-                self.canvas.create_rectangle(64*pt[X],
-                                             self.toTk(64*pt[Y]),
-                                             64*(pt[X]+1),
-                                             self.toTk(64*(pt[Y]+1)),
+                self.canvas.create_rectangle(64 * pt[X],
+                                             self.toTk(64 * pt[Y]),
+                                             64 * (pt[X]+1),
+                                             self.toTk(64 * (pt[Y]+1)),
                                              fill='black')
         for n in node.children:
             self.visit(n)
             
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = Tk()
     app = QuadTreePointApp(root)
     app.viz = VisualizationWindow(root, label)

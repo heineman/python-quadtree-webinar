@@ -6,8 +6,8 @@
     
 """
 
-from tkinter import Tk, Canvas, ALL
 import random
+from tkinter import Tk, Canvas, ALL
 
 from quadtree.quad import QuadTree, RADIUS, MULTIPLE
 from adk.region import Region, minValue, maxValue, X, Y
@@ -28,15 +28,15 @@ MinRadius = 10
 
 def label(node):
     """Return integer to display in node."""
-    if node.shapes:
-        return len(node.shapes)
+    if node.circles:
+        return len(node.circles)
     else:
         return 0
 
 class QuadTreeFixedApp:
     
     def __init__(self, master):
-        """App for creating Quad tree dynamically with fixed circles that detect collisions."""
+        """App for creating QuadTree with fixed circles that detect collisions."""
         
         master.title("Click to add fixed circles for QuadTree collision detection.") 
         self.master = master 
@@ -67,7 +67,8 @@ class QuadTreeFixedApp:
          
     def click(self, event):
         """Add circle to QuadTree with random radius."""
-        circle = [event.x, self.toCartesian(event.y), random.randint(MinRadius, MaxRadius), False, False]
+        circle = [event.x, self.toCartesian(event.y), 
+                  random.randint(MinRadius, MaxRadius), False, False]
         
         # Mark these circles to have their HIT status set to True
         for circ in self.tree.collide(circle):
@@ -86,7 +87,7 @@ class QuadTreeFixedApp:
         self.viz.clear()
         
     def visit (self, node):
-        """ Visit nodes recursively."""
+        """Visit nodes recursively."""
         if node == None: 
             return
 
@@ -95,21 +96,21 @@ class QuadTreeFixedApp:
         self.canvas.create_rectangle(r.x_min, self.toTk(r.y_min), r.x_max, self.toTk(r.y_max))
          
         self.canvas.create_line(r.x_min, self.toTk(node.origin[Y]), r.x_max, self.toTk(node.origin[Y]),
-                                fill='black', dash=(2, 4)) 
+                                 dash=(2, 4)) 
         self.canvas.create_line(node.origin[X], self.toTk(r.y_min), node.origin[X], self.toTk(r.y_max),
-                                fill='black', dash=(2, 4))
+                                dash=(2, 4))
          
-        for shape in node.shapes:
-            markColor = 'Black'
-            if shape[MULTIPLE]: markColor = 'Blue'
-            if shape[HIT]: markColor = 'Red'
-            self.canvas.create_oval(shape[X] - shape[RADIUS], self.toTk(shape[Y]) - shape[RADIUS], 
-                                 shape[X] + shape[RADIUS], self.toTk(shape[Y]) + shape[RADIUS], 
+        for circle in node.circles:
+            markColor = 'black'
+            if circle[MULTIPLE]: markColor = 'blue'
+            if circle[HIT]: markColor = 'red'
+            self.canvas.create_oval(circle[X] - circle[RADIUS], self.toTk(circle[Y]) - circle[RADIUS], 
+                                 circle[X] + circle[RADIUS], self.toTk(circle[Y]) + circle[RADIUS], 
                                  fill=markColor)
         for n in node.children:
             self.visit(n)
             
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = Tk()
     app = QuadTreeFixedApp(root)
     app.viz = VisualizationWindow(root, label=label)

@@ -9,7 +9,7 @@ def performance():
     numTrials = 20
     
     # print header
-    print ("n", "GCD_sub", "GCD_div")
+    print ('n', 'GCD_sub', 'GCD_div')
     while n <= 4096:
         naive_gcd = mod_gcd = 0
         
@@ -21,13 +21,13 @@ def performance():
             
         # setup contains code that executes BEFORE the designated code. Use this to
         # construct values of initial variables. Don't forget the imports clauses.
-        setup= '''
-pairs = []'''
+        setup='''pairs = []'''
         for pair in pairs:
-            setup = setup + "\npairs.append((%d,%d))" % (pair[0], pair[1])
+            setup = setup + '\npairs.append((%d,%d))' % (pair[0], pair[1])
         
         # Euclid gcd using subtraction method
-        naive_gcd += min(timeit.Timer('''
+        naive_gcd += min(timeit.Timer(
+'''
 checksum = 0
 for pair in pairs:
     a = pair[0]
@@ -43,7 +43,8 @@ for pair in pairs:
                                         , setup=setup).repeat(5,numTrials))
          
         # GCD by division  
-        mod_gcd += min(timeit.Timer('''
+        mod_gcd += min(timeit.Timer(
+'''
 checksum = 0
 for pair in pairs:
     a = pair[0]
@@ -55,7 +56,7 @@ for pair in pairs:
 '''
                                         , setup=setup).repeat(5,numTrials))
             
-        print ("%d %5.4f %5.4f" % (n, 1000*naive_gcd/numTrials, 1000*mod_gcd/numTrials))
+        print ('%d %5.4f %5.4f' % (n, 1000*naive_gcd/numTrials, 1000*mod_gcd/numTrials))
 
         # advance to next problem size
         n *= 2
@@ -66,13 +67,13 @@ if __name__ == '__main__':
 # Sample Run:
 """
 n GCD_sub GCD_div
-16 0.2411 0.0508
-32 0.6614 0.0993
-64 6.7517 0.2080
-128 2.6772 0.4056
-256 7.4513 0.8343
-512 13.3395 1.6672
-1024 26.7778 3.3044
-2048 72.3874 8.0088
-4096 190.7916 16.5209
+16 0.2351 0.0533
+32 0.7987 0.0989
+64 2.0981 0.2038
+128 2.9921 0.4154
+256 5.4986 0.8270
+512 16.1112 1.6522
+1024 27.0252 3.3149
+2048 56.3866 8.0510
+4096 126.8905 16.5398
 """

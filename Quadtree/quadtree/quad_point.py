@@ -1,11 +1,12 @@
 """
     Quadtree implementation for storing points.
     
-    Every Quad Node has up to four children, partitioning space accordingly based on NE, NW, SW, SE quadrants.
-    Each Node evenly divides quadrants. Each node can store 4 points, after which it must be subdivided
-    to store additional points.
+    Every Quad Node has up to four children, partitioning space accordingly based on 
+    NE, NW, SW, SE quadrants. Each Node evenly divides quadrants. Each node can store
+    4 points, after which it must be subdivided to store additional points.
     
-    The Quadtree implements set-semantics. This means there are no duplicate (x, y) points in a quadtree.
+    The Quadtree implements set-semantics. This means there are no duplicate (x, y)
+    points in a quadtree.
     
     Actual point objects only exist within the leaf nodes.
     
@@ -23,11 +24,11 @@ RADIUS=2
 # Not needed, but included for descriptive coloring in GUI
 MULTIPLE=4
 
+# Quadrant constants
 NE = 0
 NW = 1
 SW = 2
 SE = 3
-
 
 def smaller2k(n):
     """
@@ -83,9 +84,9 @@ class QuadNode:
                 
         return count
     
-    def add (self, pt):
+    def add(self, pt):
         """Add pt to the QuadNode, if not already present."""
-        # Not able to fit in this node (sanity check: not truly needed since tree checks)
+        # Doesn't fit in this node (sanity check: not truly needed since tree checks)
         if not containsPoint (self.region, pt):
             return False
 
@@ -98,13 +99,13 @@ class QuadNode:
 
                 # Add if room                
                 if len(node.points) < 4:
-                    node.points.append (pt)
+                    node.points.append(pt)
                     return True
                 else:
                     node.subdivide()
             
             # Find quadrant into which to add
-            q = node.quadrant (pt)
+            q = node.quadrant(pt)
             if node.children[q] is None:
                 node.children[q] = node.subquadrant(q)
             node = node.children[q]
@@ -114,7 +115,7 @@ class QuadNode:
     def remove(self, pt):
         """
         Remove pt from descendant of this tree, should it exist, returning None if
-        entire sub-tree eliminated, or self 
+        entire sub-tree eliminated, or self.
         """
         if self.points is not None and pt in self.points:
             if len(self.points) == 1:
@@ -136,19 +137,19 @@ class QuadNode:
 
     def subquadrant(self, q):
         """Return associated sub-quadrant for node."""
-        region = self.region
+        r = self.region
         if q == NE:
-            return QuadNode(Region(self.origin[X], self.origin[Y], region.x_max,   region.y_max))
+            return QuadNode(Region(self.origin[X], self.origin[Y], r.x_max,        r.y_max))
         elif q == NW:
-            return QuadNode(Region(region.x_min,   self.origin[Y], self.origin[X], region.y_max))
+            return QuadNode(Region(r.x_min,        self.origin[Y], self.origin[X], r.y_max))
         elif q == SW: 
-            return QuadNode(Region(region.x_min,   region.y_min,   self.origin[X], self.origin[Y]))
+            return QuadNode(Region(r.x_min,        r.y_min,        self.origin[X], self.origin[Y]))
         elif q == SE:
-            return QuadNode(Region(self.origin[X], region.y_min,   region.x_max,   self.origin[Y]))
+            return QuadNode(Region(self.origin[X], r.y_min,        r.x_max,        self.origin[Y]))
         
     def subdivide(self):
-        """Add up to four children nodes to node and reassign existing points."""
-        self.children = [None]*4
+        """Add up to four children nodes and reassign existing points."""
+        self.children = [None] * 4
         
         for pt in self.points:
             q = self.quadrant(pt)
@@ -160,7 +161,7 @@ class QuadNode:
         self.points = None
     
     def quadrant(self, pt):
-        """Determine quadrant in which point exists. Closed intervals on quadrants I (NE) and III (SW)."""
+        """Determine quadrant in which point exists."""
         if pt[X] >= self.origin[X]:
             if pt[Y] >= self.origin[Y]:
                 return NE
@@ -173,7 +174,7 @@ class QuadNode:
                 return SW
      
     def preorder(self):
-        """Pre order traversal of tree rooted at given node."""
+        """Pre-order traversal of tree rooted at given node."""
         yield self
 
         for node in self.children:
@@ -189,9 +190,9 @@ class QuadTree:
 
     def __init__(self, region):
         """
-        Create Quad Tree defined over existing rectangular region. Assume that (0,0) is the center
-        and half-length side of any square in quadtree is power of 2. If incoming region is too small, then
-        this expands accordingly.    
+        Create QuadTree defined over existing rectangular region. Assume that (0,0) is
+        the lower left coordinate and the half-length side of any square in quadtree
+        is power of 2. If incoming region is too small, this expands accordingly.    
         """
         self.root = None
         self.region = region.copy()
@@ -205,9 +206,9 @@ class QuadTree:
         self.region.x_max = self.region.y_max = max(xmax2k, ymax2k)
         
     def add(self, pt):
-        """Add point to Quad Tree."""
+        """Add point to QuadTree."""
         # Not able to fit in this node
-        if not containsPoint (self.region, pt):
+        if not containsPoint(self.region, pt):
             return False
 
         if self.root is None:
@@ -227,7 +228,7 @@ class QuadTree:
         self.root = self.root.remove(pt)
     
     def __contains__(self, pt):
-        """Check whether exact point appears in Quadtree."""
+        """Check whether exact point appears in QuadTree."""
         n = self.root
         while n:
             if n.points != None and pt in n.points:
@@ -242,7 +243,7 @@ class QuadTree:
         return False
     
     def __iter__(self):
-        """In order traversal of elements in the tree."""
+        """Pre-order traversal of elements in the tree."""
         if self.root:
             for e in self.root.preorder():
                 yield e

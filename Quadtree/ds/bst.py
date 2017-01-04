@@ -81,12 +81,12 @@ class BinaryTree:
         return False
 
     def __iter__(self):
-        """In order traversal of elements in the tree."""
+        """In-order traversal of elements in the tree."""
         if self.root:
             return self.root.inorder()
                                 
     def sameStartingLetter (self, letter):
-        """Return iterator of words starting with same letter."""
+        """Return iterator of words starting with same given letter."""
         if self.root:
             for word in self.root.sameStartingLetter(letter):
                 yield word

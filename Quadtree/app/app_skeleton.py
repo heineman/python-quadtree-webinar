@@ -17,7 +17,7 @@ class SkeletonApp():
         master.title("Click to add up to " + str(numEvents) + " circles.") 
         self.master = master 
         
-        # keep track of a fixed number of events
+        # keep track of a fixed number of clicked events
         self.clicked = []
         
         self.canvas = Canvas(master, width=512, height=512)        
@@ -36,9 +36,9 @@ class SkeletonApp():
         self.canvas.delete(ALL)
         for shape in self.clicked:
             self.canvas.create_oval(shape[X] - 4, shape[Y] - 4, 
-                                 shape[X] + 4, shape[Y] + 4, fill='Black')
+                                    shape[X] + 4, shape[Y] + 4, fill='black')
             
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = Tk()
     app = SkeletonApp(root)
     root.mainloop()

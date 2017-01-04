@@ -1,18 +1,18 @@
 """
     Quadtree implementation.
     
-    Every Quad Node has four children, partitioning space accordingly based on NE, NW, SW, SE quadrants.
-    Each Node evenly divides quadrants and stores shapes that are wholly contained by its rectangular
-    region. 
+    Every Quad Node has four children, partitioning space accordingly based on NE, NW, 
+    SW, SE quadrants. Each Node evenly divides quadrants and stores circles that are 
+    wholly contained by its rectangular region. 
     
-    Two or more identical shapes can exist.
+    Two or more identical circles can exist.
     
-    Because the shapes are two-dimensional, they may intersect two (or more) of the subregions in the
-    quadtree. Therefore, each shape is stored in the highest node in the tree whose associated 
-    region fully encloses the shape.
+    Because the circles are two-dimensional, they may intersect two (or more) of the 
+    subregions in the quadtree. Therefore, each circle is stored in the highest node in 
+    the tree whose associated region fully encloses the circle.
     
-    When the shapes are large, this means the resulting quadtree might be skewed with far too many shapes
-    stored in upper nodes. 
+    When the circles are large, this means the resulting quadtree might be skewed with 
+    far too many circles stored in upper nodes. 
    
 """
 
@@ -57,7 +57,7 @@ def larger2k(n):
         return 2**math.ceil(math.log2(n))
 
 def completelyContains(region, circle):
-    """Determine if region completely contains the given circle , closed on min and open on max."""
+    """Determine if region completely contains circle, closed on min, open on max."""
     if circle[X] - circle[RADIUS] <  region.x_max: return False
     if circle[X] + circle[RADIUS] >= region.x_max: return False
     if circle[Y] - circle[RADIUS] <  region.y_min: return False
@@ -79,7 +79,7 @@ def intersectsCircle(region, circle):
     corner = [ distCenter[X] - halfSize[X], distCenter[Y] - halfSize[Y]]
     
     return (corner[X] ** 2 + corner[Y] ** 2) <= circle[RADIUS] ** 2
-    ## https://www.reddit.com/r/pygame/comments/2pxiha/rectanglar_circle_hit_detection/
+    # http://www.reddit.com/r/pygame/comments/2pxiha/rectanglar_circle_hit_detection
     
 
 def defaultCollision(c1, c2):
@@ -93,41 +93,41 @@ def defaultCollision(c1, c2):
 class QuadNode:
     
     def __init__(self, region):
-        """Create QuadNode centered on origin of given region"""
+        """Create QuadNode centered on origin of given region."""
         self.region = region
         self.origin = (region.x_min + (region.x_max - region.x_min)//2, region.y_min + (region.y_max - region.y_min)//2) 
         self.children = [None]*4
-        self.shapes = []
+        self.circles = []
     
-    def collide (self, circle):
-        """Yield points in leaf that intersect with circle."""
+    def collide(self, circle):
+        """Yield circles in leaf that intersect with circle."""
         
         # Circle must intersect
         if intersectsCircle (self.region, circle):
-            # if we have shapes, must check them
-            for s in self.shapes:
-                if QuadTree.collision(s, circle):
-                    yield s
+            # if we have circles, must check them
+            for c in self.circles:
+                if QuadTree.collision(c, circle):
+                    yield c
             
-            # If subquadrants, find quadrant(s) into which to check further (might be more than one)...
+            # If subquadrants, find quadrant(s) into which to check further 
             if self.children[NE] == None: return
             
             for q in self.quadrants(circle):
                 for s in self.children[q].collide(circle):
                     yield s
  
-    def add (self, circle):
-        """Add circle to the QuadNode."""
+    def add(self, circle):
+        """Add circle to the QuadNode, subdividing as needed."""
         node = self
         while node:
             # Not part of this region
             if not intersectsCircle (node.region, circle):
                 return False
         
-            # Not yet subdivided? Then add to shapes, subdividing once > 4
+            # Not yet subdivided? Then add to circles, subdividing once > 4
             if node.children[NE] == None:
-                node.shapes.append(circle)
-                if len(node.shapes) > 4:
+                node.circles.append(circle)
+                if len(node.circles) > 4:
                     node.subdivide()
                 return True
             
@@ -137,48 +137,48 @@ class QuadNode:
             if len(quads) == 1:
                 node = node.children[quads[0]]
             else:
-                self.shapes.append(circle)
+                node.circles.append(circle)
                 return True
             
         return False
 
-    def remove(self, shape):
-        """Remove shape from QuadNode. Does not adjust structure. Return True if updated information."""
-        if self.shapes != None:
-            if shape in self.shapes:
-                idx = self.shapes.index(shape)
-                del self.shapes[idx]
+    def remove(self, circle):
+        """Remove circle from QuadNode. Does not adjust structure. Return True if updated information."""
+        if self.circles != None:
+            if circle in self.circles:
+                idx = self.circles.index(circle)
+                del self.circles[idx]
                 return True
             
         return False
 
     def subdivide(self):
         """Add four children nodes to node and reassign existing points."""
-        region = self.region
-        self.children[NE] = QuadNode(Region(self.origin[X], self.origin[Y], region.x_max,   region.y_max))
-        self.children[NW] = QuadNode(Region(region.x_min,   self.origin[Y], self.origin[X], region.y_max))
-        self.children[SW] = QuadNode(Region(region.x_min,   region.y_min,   self.origin[X], self.origin[Y]))
-        self.children[SE] = QuadNode(Region(self.origin[X], region.y_min,   region.x_max,   self.origin[Y]))
+        r = self.region
+        self.children[NE] = QuadNode(Region(self.origin[X], self.origin[Y], r.x_max,        r.y_max))
+        self.children[NW] = QuadNode(Region(r.x_min,        self.origin[Y], self.origin[X], r.y_max))
+        self.children[SW] = QuadNode(Region(r.x_min,        r.y_min,        self.origin[X], self.origin[Y]))
+        self.children[SE] = QuadNode(Region(self.origin[X], r.y_min,        r.x_max,        self.origin[Y]))
         
-        # go through shapes we completely contain and try to push to lowest children. If 
-        # intersect 2 or more quadrants then we must keep.
-        update = self.shapes
-        self.shapes = []
+        # go through completely contained circles and try to push to lowest 
+        # children. If intersect 2 or more quadrants then we must keep.
+        update = self.circles
+        self.circles = []
         for circle in update:
             quads = self.quadrants(circle)
             
-            # If circle intersects multiple quadrants, must break structure and
-            # add to self, otherwise only add to that individual quadrant 
+            # If circle intersects multiple quadrants, must add to self, and mark
+            # as MULTIPLE, otherwise only add to that individual quadrant 
             if len(quads) == 1:
                 self.children[quads[0]].add(circle)
                 circle[MULTIPLE] = False
             else:
-                self.shapes.append(circle)
+                self.circles.append(circle)
                 circle[MULTIPLE] = True 
     
     
     def quadrants(self, circle):
-        """Determine quadrant(s) in which point exists. Closed intervals on quadrants I (NE) and III (SW)."""
+        """Determine quadrant(s) in which point exists."""
         quads = []
         if intersectsCircle(self.children[NE].region, circle): quads.append(NE)
         if intersectsCircle(self.children[NW].region, circle): quads.append(NW)
@@ -187,7 +187,7 @@ class QuadNode:
         return quads
     
     def quadrant(self, pt):
-        """Determine quadrant in which point exists. Closed intervals on quadrants I (NE) and III (SW)."""
+        """Determine quadrant in which point exists."""
         if pt[X] >= self.origin[X]:
             if pt[Y] >= self.origin[Y]:
                 return NE
@@ -200,7 +200,7 @@ class QuadNode:
                 return SW
      
     def preorder(self):
-        """Preorder traversal of tree rooted at given node."""
+        """Pre-order traversal of tree rooted at given node."""
         yield self
 
         for node in self.children:
@@ -210,7 +210,7 @@ class QuadNode:
 
     def __str__(self):
         """toString representation."""
-        return "[{} ({}): {},{},{},{}]".format(self.region, self.shapes, self.children[NE], self.children[NW], self.children[SW], self.children[SE])
+        return "[{} ({}): {},{},{},{}]".format(self.region, self.circles, self.children[NE], self.children[NW], self.children[SW], self.children[SE])
 
 class QuadTree:
 
@@ -219,9 +219,9 @@ class QuadTree:
 
     def __init__(self, region):
         """
-        Create Quadtree defined over existing rectangular region. Assume that (0,0) is the center
-        and half-length side of any square in quadtree is power of 2. If incoming region is too small, then
-        this expands accordingly.    
+        Create QuadTree defined over existing rectangular region. Assume that (0,0) is
+        the lower left coordinate and the half-length side of any square in quadtree
+        is power of 2. If incoming region is too small, this expands accordingly.    
         """
         self.root = None
         self.region = region.copy()
@@ -235,7 +235,7 @@ class QuadTree:
         self.region.x_max = self.region.y_max = max(xmax2k, ymax2k)
         
     def add(self, circle):
-        """Add circle to Quadtree."""
+        """Add circle to QuadTree."""
         if self.root is None:
             self.root = QuadNode(self.region)
             self.root.add(circle)
@@ -244,29 +244,29 @@ class QuadTree:
         return self.root.add (circle)
     
     def collide(self, circle):
-        """Return collisions to circle within Quadtree."""
+        """Return collisions to circle within QuadTree."""
         if self.root is None:
             return iter([])
         
         return self.root.collide (circle)
     
     def remove(self, circle):
-        """Remove circle should it exist in Quadtree."""
+        """Remove circle should it exist in QuadTree."""
         node = self.root
         while node:
             quads = node.quadrants (circle)
             if len(quads) == 1:
                 node = node.children[quads[0]]
             else:
-                for i in range(len(node.shapes)):
-                    if node.shapes[i] == circle:
-                        del node.shapes[i]
+                for i in range(len(node.circles)):
+                    if node.circles[i] == circle:
+                        del node.circles[i]
                         return True
     
         return False
     
     def __iter__(self):
-        """Traversal of elements in the tree."""
+        """Traverse elements in the tree."""
         if self.root:
             for e in self.root.preorder():
                 yield e

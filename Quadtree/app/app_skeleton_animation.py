@@ -1,7 +1,7 @@
 """
     Demonstration skeleton application for remaining apps.
     
-    Left mouse click shows a fixed number of previous mouse clicks.
+    Moving the mouse leaves a trail of dots connected by lines.
 """
 
 from adk.region import X, Y
@@ -15,12 +15,12 @@ frameDelay = 25
 
 class SkeletonAnimationApp():
     def __init__(self, master):
-        """Skeleton app to help understand more advanced ones."""
+        """Skeleton animation app to help understand more advanced ones."""
         
         master.title("Track mouse with up to " + str(numEvents) + " circles.") 
         self.master = master 
         
-        # keep track of a fixed number of events
+        # keep track of a fixed number of motion events
         self.events = []
         
         self.canvas = Canvas(master, width=512, height=512)        
@@ -47,12 +47,12 @@ class SkeletonAnimationApp():
         last = None
         for shape in self.events:
             self.canvas.create_oval(shape[X] - 4, shape[Y] - 4, 
-                                 shape[X] + 4, shape[Y] + 4, fill='Black')
+                                 shape[X] + 4, shape[Y] + 4, fill='black')
             if last:
                 self.canvas.create_line(shape[X], shape[Y], last[X], last[Y])
             last = shape
             
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = Tk()
     app = SkeletonAnimationApp(root)
     root.mainloop()

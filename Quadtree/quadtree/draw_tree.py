@@ -9,6 +9,11 @@
 
     Note: Before use, must externally set the small/large fonts to use, otherwise
     the default one is likely too small to see.
+    
+    Multiple adjustNN code suggests different layout heuristics. One I would like
+    to add is to ensure a node N's left-most child is to the right of the 
+    right-most child of the left-sibling of N (read that twice and it makes sense).
+    Possibly extend to descendant instead of just child.
 """
 
 from quadtree.quad import NE, NW, SW, SE
@@ -31,7 +36,7 @@ class DrawTree(object):
     the depth of the node (0=root) and x reflects the offset position within 
     that depth.
 
-    Algorithm inspired by from https://llimllib.github.io/pymag-trees/
+    Algorithm inspired by from https://llimllib.github.io/pymag-trees
     """
     
     # must be set externally after tk is initialized.
@@ -63,33 +68,52 @@ class DrawTree(object):
         nexts[depth] += 2
         self.y = depth
         
-        # recursively process all descendant nodes, and determine min/max of direct children.
+        # recursively process descendant nodes, and determine min/max of children.
         for quad in range(len(self.children)):
             if self.children[quad] is not None:
                 self.children[quad].assign(depth+1, nexts)
                 x_min = min(x_min, self.children[quad].x)
                 x_max = max(x_max, self.children[quad].x)
     
-        # Move self to be middle of children. If no children, do nothing. When 'mod' is 
-        # set, all descendants of a node are shifted right (including that node). Otherwise
-        # you only need to shift self node to be in proper position. 
+        # Move self to be middle of children. If no children, do nothing. When 'mod'
+        # is set, all descendants of a node are shifted right (including that node).
+        # Otherwise you only need to shift self node to be in proper position. 
         child_mid = (x_min + x_max) / 2.0
         if child_mid < self.x:
             self.mod = self.x - child_mid
         elif child_mid > self.x:
             self.x = child_mid
 
-    def adjust(self, modsum=0):
-        """Recursively offset nodes horizontally by computed 'mod' values."""
-        self.x += modsum
+    def adjust0(self, modsum=0):
+        """ORIGINAL which led to cross-over of cousin noeds."""
+        self.x += modsum   ###ON
         modsum += self.mod
 
         for quad in range(len(self.children)):
             if self.children[quad] is not None:
                 self.children[quad].adjust(modsum)          
 
+    def adjust1(self, modsum=0):
+        """Modified, which left-justified for poor layout."""
+        modsum += self.mod
+
+        for quad in range(len(self.children)):
+            if self.children[quad] is not None:
+                modsum += self.children[quad].mod   
+                self.children[quad].adjust(modsum)          
+
+    def adjust(self, modsum=0):
+        """Recursively offset nodes horizontally by computed 'mod' values."""
+        self.x += modsum  
+        
+        for quad in range(len(self.children)):
+            if self.children[quad] is not None:
+                modsum = self.children[quad].adjust(modsum)
+                          
+        return modsum
+
     def middle(self):
-        """compute mid point for DrawTree node."""
+        """Compute mid point for DrawTree node."""
         return (self.x*magx + node_w/2,
                 self.y*magy + node_h/2)
 
@@ -100,8 +124,7 @@ class DrawTree(object):
         needed, based on orientation with regards to their children.
         """
         # use defaultdict (with default of 0) for each level to start at left.
-        nexts  = defaultdict(int)
-        self.assign(0, nexts)
+        self.assign(0, defaultdict(int))
         self.adjust()
 
     def format(self, canvas, orientation=-1):
@@ -117,13 +140,13 @@ class DrawTree(object):
                 canvas.create_line(mid[0], mid[1], child[0], child[1])
                 self.children[quad].format(canvas, quad)
 
-        colorToUse = 'white'
+        color = 'white'
         if self.label:
             ival = self.label(self.node)
             if ival == 0:
-                colorToUse = 'gray'
+                color = 'gray'
         canvas.create_rectangle(self.x*magx, self.y*magy,
-                                self.x*magx+node_w, self.y*magy+node_h, fill=colorToUse)
+                                self.x*magx+node_w, self.y*magy+node_h, fill=color)
 
         # draw corner in faint colors
         if orientation == NW:
@@ -165,9 +188,9 @@ class DrawTree(object):
                            font=font,
                            width=node_w, text=text)
 
-    def prettyPrint(self):
-        """pp out the tree for debugging."""
-        print (str(self.x) + "," + str(self.y) + " " + str(self.node.region))
+    def prettyPrint(self, indent=''):
+        """Print out the tree for debugging."""
+        print (indent + str(self.x) + "," + str(self.y) + " " + str(self.node.region))
         for quad in range(len(self.children)):
             if self.children[quad] is not None:
-                self.children[quad].prettyPrint()
+                self.children[quad].prettyPrint(indent + '  ')

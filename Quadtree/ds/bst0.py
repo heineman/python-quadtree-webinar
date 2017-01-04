@@ -47,7 +47,7 @@ class BinaryTree:
         pass
 
     def __iter__(self):
-        """In order traversal of elements in the tree."""
+        """In-order traversal of elements in the tree."""
         if self.root:
             return self.root.inorder()
                                 

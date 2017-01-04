@@ -1,17 +1,12 @@
 """
-    Demonstration application for collision detection. Each shape added is a random circle.
+    Demonstration application for collision detection. Each shape added is a 
+    circle with given (x,y) point and random radius.
     
     Left mouse adds circle.
-    
-    Shows no collisions between 'neighboring' nodes in different siblings. Check this by clicking mouse
-    on the vertical edge of a region, and then moving just one pixel to the left and clicking. It won't be 
-    red. Similarly, do this in a region that has yet to be subdivided and "eyeball" where that point is,
-    then click one pixel to the left and the collision will be detected;
-    
 """
 
-from tkinter import Tk, Canvas, ALL
 import random
+from tkinter import Tk, Canvas, ALL
 
 from quadtree.quad import QuadTree, RADIUS, MULTIPLE 
 from adk.region import Region, minValue, maxValue, X, Y
@@ -85,22 +80,22 @@ class QuadTreeFixedApp:
         self.canvas.create_rectangle(r.x_min, self.toTk(r.y_min), r.x_max, self.toTk(r.y_max))
          
         self.canvas.create_line(r.x_min, self.toTk(node.origin[Y]), r.x_max, self.toTk(node.origin[Y]),
-                                fill='black', dash=(2, 4)) 
+                                dash=(2, 4)) 
         self.canvas.create_line(node.origin[X], self.toTk(r.y_min), node.origin[X], self.toTk(r.y_max),
-                                fill='black', dash=(2, 4))
+                                dash=(2, 4))
          
-        for shape in node.shapes:
-            markColor = 'Black'
-            if shape[MULTIPLE]: markColor = 'Blue'
-            if shape[HIT]: markColor = 'Red'
-            self.canvas.create_oval(shape[X] - shape[RADIUS], self.toTk(shape[Y]) - shape[RADIUS], 
-                                 shape[X] + shape[RADIUS], self.toTk(shape[Y]) + shape[RADIUS], 
+        for circle in node.circles:
+            markColor = 'black'
+            if circle[MULTIPLE]: markColor = 'blue'
+            if circle[HIT]: markColor = 'red'
+            self.canvas.create_oval(circle[X] - circle[RADIUS], self.toTk(circle[Y]) - circle[RADIUS], 
+                                 circle[X] + circle[RADIUS], self.toTk(circle[Y]) + circle[RADIUS], 
                                  fill=markColor)
         
         for n in node.children:
             self.visit(n)
             
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = Tk()
     app = QuadTreeFixedApp(root)
     root.mainloop()
