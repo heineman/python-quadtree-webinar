@@ -114,29 +114,31 @@ class QuadNode:
 
     def remove(self, pt):
         """
-        Remove pt from descendant of this tree, should it exist, returning None if
-        entire sub-tree eliminated, or self.
+        Remove pt from descendant of this tree, returning (newRoot,update), where
+        update is True if the point was removed from tree rooted at self, and 
+        newRoot is the new root for parent node to use.
         """
         if self.points is not None and pt in self.points:
             if len(self.points) == 1:
-                return None
+                return (None, True)
             else:
                 idx = self.points.index(pt)
                 del self.points[idx]
-                return self
-        else:
-            q = self.quadrant(pt)
-            if self.children[q]:
-                self.children[q] = self.children[q].remove(pt)
+                return (self, True)
+        
+        q = self.quadrant(pt)
+        updated = False
+        if self.children[q]:
+            self.children[q],updated = self.children[q].remove(pt)
             
         # if all children None, so are we, otherwise return self.
         if self.countChildren() == 0:
-            return None
+            return (None,updated)
     
-        return self
+        return (self, updated)
 
     def subquadrant(self, q):
-        """Return associated sub-quadrant for node."""
+        """Create QuadNode associated with sub-quadrant for parent region."""
         r = self.region
         if q == NE:
             return QuadNode(Region(self.origin[X], self.origin[Y], r.x_max,        r.y_max))
@@ -225,7 +227,8 @@ class QuadTree:
         if not containsPoint (self.region, pt):
             return False
         
-        self.root = self.root.remove(pt)
+        self.root,updated = self.root.remove(pt)
+        return updated
     
     def __contains__(self, pt):
         """Check whether exact point appears in QuadTree."""

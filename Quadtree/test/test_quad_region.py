@@ -106,15 +106,15 @@ class TestBSTMethods(unittest.TestCase):
         
         # Top-level
         self.assertTrue(self.qt.root.children[SW] == None)
-        self.assertTrue(self.qt.root.children[NE].isFull())
+        self.assertTrue(self.qt.root.children[NE].full)
         
         # second level
-        self.assertTrue(self.qt.root.children[NW].children[SE].isFull())
-        self.assertTrue(self.qt.root.children[SE].children[NW].isFull())
+        self.assertTrue(self.qt.root.children[NW].children[SE].full)
+        self.assertTrue(self.qt.root.children[SE].children[NW].full)
         
         # third level
         self.assertTrue(self.qt.root.children[SE].children[SW].children[NE].isPoint())
-        self.assertTrue(self.qt.root.children[SE].children[SW].children[NE].isFull())
+        self.assertTrue(self.qt.root.children[SE].children[SW].children[NE].full)
         
     def test_presentation_odd(self):
         self.qt.add((3,4))
@@ -126,10 +126,10 @@ class TestBSTMethods(unittest.TestCase):
         
         # last level
         self.assertTrue(self.qt.root.children[NW].children[SE].children[SE].isPoint())
-        self.assertTrue(self.qt.root.children[NW].children[SE].children[SE].isFull())
+        self.assertTrue(self.qt.root.children[NW].children[SE].children[SE].full)
         
         self.assertTrue(self.qt.root.children[SE].children[NW].children[NW].isPoint())
-        self.assertTrue(self.qt.root.children[SE].children[NW].children[NW].isFull())
+        self.assertTrue(self.qt.root.children[SE].children[NW].children[NW].full)
         
     def test_checkerboard(self):
         for i in range(8):
@@ -148,7 +148,7 @@ class TestBSTMethods(unittest.TestCase):
                 if (i+j) %2 == 1:
                     self.assertTrue(self.qt.add((i,j)))
         
-        self.assertTrue (self.qt.root.isFull())
+        self.assertTrue (self.qt.root.full)
         for i in range(8):
             for j in range(8):
                 self.assertTrue((i,j) in self.qt)
@@ -164,7 +164,7 @@ class TestBSTMethods(unittest.TestCase):
         for pt in toAdd:
             self.assertTrue (self.qt.add(pt))
         
-        self.assertTrue (self.qt.root.isFull())
+        self.assertTrue (self.qt.root.full)
         
         random.shuffle(toAdd)
         for pt in toAdd:

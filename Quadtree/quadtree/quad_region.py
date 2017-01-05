@@ -27,15 +27,6 @@ NW = 1
 SW = 2
 SE = 3
 
-# status for a node. Once all points for a node's region are in the quadtree,
-# that node is marked as FULL and all its children are deleted. When a point
-# is removed which makes it necessary for a node to be removed, it is marked
-# as DELETED and then removed during a prune operation. Otherwise, the status
-# of the node is NEUTRAL.
-FULL = 1
-NEUTRAL = 0
-DELETED = -1
-
 def smaller2k(n):
     """
     Returns power of 2 which is smaller than n. Handles negative numbers.
@@ -66,52 +57,29 @@ def containsPoint(region, point):
     return True
 
 class QuadNode:
-    """
-    When a QuadNode has status set to DELETED, its parent can delete it at any
-    time by replacing with None. The prune() operation cleans up recursively.
-    """
-    def __init__(self, region, status = NEUTRAL):
+    
+    def __init__(self, region, isFull = False):
         """Create empty QuadNode centered on origin of given region."""
         self.region = region
         self.origin = (region.x_min + (region.x_max - region.x_min)//2, 
                        region.y_min + (region.y_max - region.y_min)//2) 
         self.children = [None] * 4
-        self.status = status
+        self.full = isFull
        
-    def isFull(self):
-        """Determine if node is full."""
-        return self.status == FULL
-    
-    def setFull(self):
-        """Mark node as full."""
-        self.status = FULL
-    
-    def isDeleted(self):
-        """Determine if node is full."""
-        return self.status == DELETED
-
-    def setDeleted(self):
-        """Mark node as deleted."""
-        self.status = DELETED
-
-    def setNeutral(self):
-        """Mark node as neither full nor deleted."""
-        self.status = NEUTRAL
-
     def isPoint(self):
         """Determine if associated region is a single point. Region is closed on min, open on max."""
         return self.region.x_min + 1 == self.region.x_max and self.region.y_min + 1 == self.region.y_max
     
-    def add (self, pt):
+    def add(self, pt):
         """Add pt to QuadNode, creating and merging QuadNodes as needed."""
          
         # Find quadrant into which point is to be inserted and create if empty
         q = self.quadrant (pt)
         
         if self.children[q] == None:
-            self.children[q] = QuadNode(self.computeQuadrant(q))
+            self.children[q] = QuadNode(self.subregion(q))
             if self.children[q].isPoint():
-                self.children[q].setFull()
+                self.children[q].full = True
             else:
                 self.children[q].add(pt)
         else:
@@ -121,7 +89,7 @@ class QuadNode:
             
         # We have added pt to one of node's children. Perhaps we are full?
         if self.childrenFull():
-            self.setFull()
+            self.full = True
             self.children = [None] * 4   
         
         return True
@@ -132,36 +100,24 @@ class QuadNode:
         that contains this point.
         """
         if self.isPoint():
-            self.setDeleted()
-            return True
+            return (None, True)
         
         q = self.quadrant(pt)
-        if self.isFull():
+        if self.full:
             self.subdivide()
-            self.setNeutral()
+            self.full = False
             
-        return self.children[q].remove(pt)
-        
-    def prune(self, pt):
-        """Pt was removed from a descendant. Remove nodes marked DELETED."""
-        newSelf = self
-        
-        if self.isDeleted():
-            newSelf = None
-        else:
-            q = self.quadrant(pt)
-            self.children[q] = self.children[q].prune(pt)
-            if self.childrenNull():
-                newSelf = None
-         
-        return newSelf
-
+        self.children[q],updated = self.children[q].remove(pt)
+        if self.childrenNull():
+            return (None,updated)
+        return (self,updated)
+    
     def childrenFull(self):
         """Determine if all children are full."""
-        if self.children[NE] is None or not self.children[NE].isFull(): return False
-        if self.children[NW] is None or not self.children[NW].isFull(): return False
-        if self.children[SW] is None or not self.children[SW].isFull(): return False
-        if self.children[SE] is None or not self.children[SE].isFull(): return False
+        if self.children[NE] is None or not self.children[NE].full: return False
+        if self.children[NW] is None or not self.children[NW].full: return False
+        if self.children[SW] is None or not self.children[SW].full: return False
+        if self.children[SE] is None or not self.children[SE].full: return False
         
         return True
     
@@ -174,7 +130,7 @@ class QuadNode:
         
         return True
     
-    def computeQuadrant(self, q):
+    def subregion(self, q):
         """Return region associated with given quadrant."""
         r = self.region
         if q is NE:
@@ -187,11 +143,11 @@ class QuadNode:
             return Region(self.origin[X], r.y_min,        r.x_max,        self.origin[Y])
     
     def subdivide(self):
-        """Add four children nodes to node, and retain status of parent node."""
-        self.children[NE] = QuadNode(self.computeQuadrant(NE), self.status)
-        self.children[NW] = QuadNode(self.computeQuadrant(NW), self.status)
-        self.children[SW] = QuadNode(self.computeQuadrant(SW), self.status)
-        self.children[SE] = QuadNode(self.computeQuadrant(SE), self.status)
+        """Add four children nodes to node, and retain full status of parent."""
+        self.children[NE] = QuadNode(self.subregion(NE), self.full)
+        self.children[NW] = QuadNode(self.subregion(NW), self.full)
+        self.children[SW] = QuadNode(self.subregion(SW), self.full)
+        self.children[SE] = QuadNode(self.subregion(SE), self.full)
     
     def quadrant(self, pt):
         """Determine quadrant in which point exists."""
@@ -250,19 +206,15 @@ class QuadTree:
         return self.root.add (pt)
     
     def remove(self, pt):
-        """Remove pt should it exist in tree. Uses second traversal to prune deleted nodes."""
+        """Remove pt should it exist in tree. Return True if was removed, else False."""
+        if self.root is None:
+            return False
+        
         if not containsPoint (self.region, pt):
             return False
         
-        n = self.root
-        if n.isFull():
-            n.subdivide()
-    
-        if self.root.remove(pt):
-            self.root = self.root.prune(pt)
-            return True
-        else:
-            return False
+        self.root,updated = self.root.remove(pt)
+        return updated
     
     def __contains__(self, pt):
         """Check whether exact point appears in QuadTree."""
@@ -271,7 +223,7 @@ class QuadTree:
         
         n = self.root
         while n:
-            if n.isFull():
+            if n.full:
                 return True
 
             q = n.quadrant(pt)
@@ -284,7 +236,7 @@ class QuadTree:
         if self.root:
             # This gives QUADNODES which we need to check for FULL status.
             for n in self.root.preorder():
-                if n.isFull():
+                if n.full:
                     # yield each pt in region, one at a time.
                     for x in range(n.region.x_min, n.region.x_max):
                         for y in range(n.region.y_min, n.region.y_max):

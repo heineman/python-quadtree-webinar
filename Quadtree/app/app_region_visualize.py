@@ -122,7 +122,7 @@ class QuadTreePointApp:
                                 self.toTk(self.factor * r.y_max),
                                 dash=(2, 4))
          
-        if node.isPoint() or node.isFull():
+        if node.isPoint() or node.full:
             pt = [node.region.x_min, node.region.y_min]
             width = node.region.x_max - node.region.x_min
             self.canvas.create_rectangle(self.factor * pt[X],
