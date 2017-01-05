@@ -22,7 +22,7 @@ from quadtree.visualize import VisualizationWindow
 HIT = 3      
 
 # Parameters for size of random circles       
-MaxRadius = 10
+MaxRadius = 50
 MinRadius = 10
 
 def label(node):
