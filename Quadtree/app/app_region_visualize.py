@@ -7,6 +7,8 @@
     the individual points in the tree in pixels. For example, factor=64
     means that there are 8x8 points.
     
+    Zoomable canvas by pressing "+" or "-" to manipulate pixel point size
+    
 """
 
 from tkinter import Tk, Canvas, ALL
@@ -36,11 +38,36 @@ class QuadTreePointApp:
         self.canvas.bind("<Button-1>", self.click)
         self.canvas.bind("<Button-2>", self.reset)      # Needed for Mac
         self.canvas.bind("<Button-3>", self.reset)      # This is PC
+        master.bind("<Key>", self.zoom)
         self.canvas.pack()
 
         # no visualization just yet
         self.viz = None
 
+    def zoom(self, key):
+        """
+        Zoom in (+) and Zoom out (-) with key events. In rebuilding tree, some
+        points may get lost when zooming in.
+        """
+        factor = self.factor
+        if key.char == '+':
+            factor = min(factor*2, 256)
+        elif key.char == '-':
+            factor = max(factor//2, 1)
+            
+        if factor != self.factor:
+            self.factor = factor
+            self.canvas.delete(ALL)
+            oldTree = self.tree
+            self.tree = QuadTree(Region(0,0, 512//factor,512//factor))
+            self.master.title("Click to add/remove points: [0,0] - (" + str(512//factor) + "," + str(512//self.factor) + ")") 
+               
+            for pt in oldTree:
+                self.tree.add(pt) 
+                
+            self.visit(self.tree.root)
+            self.viz.plot(self.tree.root)
+        
     def toCartesian(self, y):
         """Convert tkinter point into Cartesian."""
         return self.canvas.winfo_height() - y

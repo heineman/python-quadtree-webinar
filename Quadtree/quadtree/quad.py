@@ -153,7 +153,7 @@ class QuadNode:
         return False
 
     def subdivide(self):
-        """Add four children nodes to node and reassign existing points."""
+        """Add four children nodes to node and reassign existing circles."""
         r = self.region
         self.children[NE] = QuadNode(Region(self.origin[X], self.origin[Y], r.x_max,        r.y_max))
         self.children[NW] = QuadNode(Region(r.x_min,        self.origin[Y], self.origin[X], r.y_max))
@@ -266,9 +266,9 @@ class QuadTree:
         return False
     
     def __iter__(self):
-        """Traverse elements in the tree."""
+        """Traverse and emit all circles in the QuadTree."""
         if self.root:
             for n in self.root.preorder():
-                if n.points:
-                    for pt in n.points:
-                        yield pt
+                if n.circles:
+                    for c in n.circles:
+                        yield c

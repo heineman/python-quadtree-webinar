@@ -1,7 +1,7 @@
+import random
 import unittest
 
 from ds.bst import BinaryTree
-import random
 
 class TestBSTMethods(unittest.TestCase):
 

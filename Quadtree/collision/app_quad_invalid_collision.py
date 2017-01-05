@@ -1,10 +1,12 @@
 """
     Demonstration application that ALMOST solves case with circles of fixed radius.
-    The problem is that it only identifies collisions in same leaf node, since 
-    that is where point-based quadtree stores its points.
+    The problem is that it only identifies collisions between circles IN THE
+    SAME LEAFE NODE, since that is where a point-based quadtree stores its points.
     
     The other problem is that when it comes to collision detection, we can't
-    represent a 2D-circle by a single point. 
+    represent a 2D-circle by a single point. And don't even get started on 
+    trying to find neighbor regions based on the fixed Radius size, since that
+    leads to more complicated inefficiencies.
     
     Left mouse adds circle. All collisions remain with each mouse click which 
     means we only need to check for collisions against the newly added circle.
@@ -79,11 +81,13 @@ class QuadTreeInvalidApp:
         """Add circle to QuadTree with random radius."""
         circle = [event.x, self.toCartesian(event.y), Radius, False, False]
         
-        # Mark these circles to have their HIT status set to True
+        # To find all collisions, take advantage of the fact that circles
+        # can neither be modified nor deleted, so any new collisions are 
+        # solely between the new circle and existing circles in the QuadTree.
         for circ in collide(self.tree.root, circle):
-            circ[HIT] = True
-            circle[HIT] = True
-        
+            circ[HIT] = 1
+            circle[HIT] = 1
+                
         self.tree.add(circle)
         self.canvas.delete(ALL)
         self.visit(self.tree.root)
@@ -101,11 +105,14 @@ class QuadTreeInvalidApp:
 
         # draw rectangular region with criss-crossed hashed lines 
         r = node.region
-        self.canvas.create_rectangle(r.x_min, self.toTk(r.y_min), r.x_max, self.toTk(r.y_max))
+        self.canvas.create_rectangle(r.x_min, self.toTk(r.y_min), 
+                                     r.x_max, self.toTk(r.y_max))
          
-        self.canvas.create_line(r.x_min, self.toTk(node.origin[Y]), r.x_max, self.toTk(node.origin[Y]),
+        self.canvas.create_line(r.x_min, self.toTk(node.origin[Y]), 
+                                r.x_max, self.toTk(node.origin[Y]),
                                 dash=(2, 4)) 
-        self.canvas.create_line(node.origin[X], self.toTk(r.y_min), node.origin[X], self.toTk(r.y_max),
+        self.canvas.create_line(node.origin[X], self.toTk(r.y_min), 
+                                node.origin[X], self.toTk(r.y_max),
                                 dash=(2, 4))
         
         if node.points: 
@@ -113,8 +120,8 @@ class QuadTreeInvalidApp:
                 markColor = 'black'
                 if circle[HIT]: markColor = 'red'
                 self.canvas.create_oval(circle[X] - circle[RADIUS], self.toTk(circle[Y]) - circle[RADIUS], 
-                                     circle[X] + circle[RADIUS], self.toTk(circle[Y]) + circle[RADIUS], 
-                                     fill=markColor)
+                                        circle[X] + circle[RADIUS], self.toTk(circle[Y]) + circle[RADIUS], 
+                                        fill=markColor)
         
         for n in node.children:
             self.visit(n)

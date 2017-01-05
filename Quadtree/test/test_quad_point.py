@@ -1,8 +1,8 @@
+import random
 import unittest
 
 from quadtree.quad_point import QuadTree
 from adk.region import Region
-import random
 
 class TestBSTMethods(unittest.TestCase):
 
@@ -21,7 +21,6 @@ class TestBSTMethods(unittest.TestCase):
     def test_basic(self):
         self.assertTrue((43, 21) in self.qt)
         self.assertFalse((21, 43) in self.qt)
-        
        
     def test_adding(self):
         for _ in range(1000):
@@ -38,7 +37,19 @@ class TestBSTMethods(unittest.TestCase):
             self.qt.add(pt)
             self.assertTrue(pt in self.qt)           # (x,y) is there
             self.assertFalse(badpt in self.qt)       # different indices not present
-            
+        
+    def test_iteration(self):
+        self.qt = QuadTree(Region(0,0,1024,1024))
+        points = []
+        for _ in range(100):
+            x = random.randint(0,1021)
+            y = random.randint(0,1021)
+            points.append((x,y))
+            self.qt.add((x,y))
+    
+        for pt in self.qt:
+            self.assertTrue(pt in points)
+        
     
 if __name__ == '__main__':
     unittest.main()    

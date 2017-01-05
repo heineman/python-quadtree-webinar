@@ -19,9 +19,6 @@ HIT = 3
 DX = 5
 DY = 6
 
-# With each passing frame, decrease by one to allow human-perception of collision
-MaxHit = 3
-
 # Parameters for size of random circles       
 MaxRadius = 30
 MinRadius = 10
@@ -110,8 +107,7 @@ class QuadTreeMovingApp:
             circles = list(n.circles)
             for idx in range(len(circles)):
                 c = circles[idx]
-                
-                c[HIT] = max(0, c[HIT]-1)     # update hit status
+                c[HIT] = False
                 
                 if c[X] - c[RADIUS] + c[DX] <= self.tree.region.x_min:
                     c[DX] = -c[DX]
@@ -127,11 +123,10 @@ class QuadTreeMovingApp:
                 else:
                     c[Y] = c[Y] + c[DY]
                     
-              
-                # Update hit status for all colliding points
+                # Update hit status for all colliding circles and insert
                 for circ in self.tree.collide(c):
-                    circ[HIT] = MaxHit
-                    c[HIT] = MaxHit
+                    circ[HIT] = True
+                    c[HIT] = True
                 self.tree.add(c)
                 
         self.canvas.delete(ALL)

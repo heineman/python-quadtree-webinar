@@ -1,8 +1,8 @@
+import random
 import unittest
 
 from quadtree.quad_region import QuadTree, NE, NW, SW, SE
 from adk.region import Region
-import random
 
 class TestBSTMethods(unittest.TestCase):
 
@@ -206,6 +206,18 @@ class TestBSTMethods(unittest.TestCase):
             self.assertTrue(pt in grab)
         for pt in grab:
             self.assertTrue(pt in actual)
+
+    def test_iteration_more(self):
+        self.qt = QuadTree(Region(0,0,1024,1024))
+        points = []
+        for _ in range(100):
+            x = random.randint(0,1021)
+            y = random.randint(0,1021)
+            points.append((x,y))
+            self.qt.add((x,y))
+    
+        for pt in self.qt:
+            self.assertTrue(pt in points)
 
     def test_cleanup(self):
         self.qt = QuadTree(Region(0,0,128,128))
