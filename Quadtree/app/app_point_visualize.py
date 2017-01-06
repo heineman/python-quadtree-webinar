@@ -11,9 +11,8 @@
 
 from tkinter import Tk, Canvas, ALL
 
-from quadtree.quad_point import QuadTree
 from adk.region import Region, minValue, maxValue, X, Y
-
+from quadtree.quad_point import QuadTree
 from quadtree.visualize import VisualizationWindow
 
 def label(node):

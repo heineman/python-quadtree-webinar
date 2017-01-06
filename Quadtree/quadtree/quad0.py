@@ -8,12 +8,7 @@
 """
 
 from adk.region import Region, X, Y
-
-# Each node can be subdivided into four quadrants.
-NE = 0
-NW = 1
-SW = 2
-SE = 3
+from quadtree.util import NW, NE, SW, SE
 
 class QuadNode:
     

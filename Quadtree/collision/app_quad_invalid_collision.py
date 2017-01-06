@@ -14,26 +14,13 @@
 
 from tkinter import Tk, Canvas, ALL
 
-from quadtree.quad_point import QuadTree, RADIUS
 from adk.region import Region, minValue, maxValue, X, Y
-
-# Attributes for Circle
-# 0 (X) is its x-coordinate
-# 1 (Y) is its y-coordinate
-# 2 (RADIUS) is its radius
-# 3 (HIT) records whether involved in a collision
-HIT = 3      
+from quadtree.quad_point import QuadTree
+from quadtree.util import defaultCollision, RADIUS, HIT
 
 # All circles have radius of 10 pixels
 Radius = 10
 
-def defaultCollision(c1, c2):
-    """Two circles intersect if distance between centers is between the sum and the difference of radii."""
-    centerDistance = (c1[X] - c2[X])**2 + (c1[Y] - c2[Y])**2
-    sumSquared = (c1[RADIUS]+c2[RADIUS])**2
-    if centerDistance > sumSquared: return False
-    return True
- 
 def collide(node, circle):
     """Yield circles in point quadtree that intersect with circle."""
     if node != None:

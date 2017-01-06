@@ -18,43 +18,14 @@
     either on (black) or off (white).
 """
 
-import math
 from adk.region import X, Y, Region
+from quadtree.util import smaller2k, larger2k, containsPoint
 
 # Quadrant constants
 NE = 0
 NW = 1
 SW = 2
 SE = 3
-
-def smaller2k(n):
-    """
-    Returns power of 2 which is smaller than n. Handles negative numbers.
-    """
-    if n == 0: return 0
-    if n < 0:
-        return -2**math.ceil(math.log2(-n))
-    else:
-        return 2**math.floor(math.log2(n))
-    
-def larger2k(n):
-    """
-    Returns power of 2 which is larger than n. Handles negative numbers.
-    """
-    if n == 0: return 0
-    if n < 0:
-        return -2**math.floor(math.log2(-n))
-    else:
-        return 2**math.ceil(math.log2(n))
-
-def containsPoint(region, point):
-    """Returns True if point contained in rectangle, closed on min, open on max."""
-    if point[X] < region.x_min: return False
-    if point[X] >= region.x_max: return False
-    if point[Y] < region.y_min: return False
-    if point[Y] >= region.y_max: return False
-    
-    return True
 
 class QuadNode:
     

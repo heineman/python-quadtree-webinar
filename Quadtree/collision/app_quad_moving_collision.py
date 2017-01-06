@@ -9,15 +9,12 @@
 import random
 from tkinter import Tk, Canvas, ALL
 
-from quadtree.quad import QuadTree, RADIUS, MULTIPLE
 from adk.region import Region, minValue, maxValue, X, Y
+from quadtree.quad import QuadTree
+from quadtree.util import RADIUS, MULTIPLE, HIT, DX, DY
 
+# Frequency (in ms) of screen refresh
 frameDelay = 40
-
-# additional attributes of circle tuple by index
-HIT = 3
-DX = 5
-DY = 6
 
 # Parameters for size of random circles       
 MaxRadius = 30

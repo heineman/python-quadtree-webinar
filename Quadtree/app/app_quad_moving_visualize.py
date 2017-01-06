@@ -5,28 +5,13 @@
     Left mouse adds circle.
     
 """
-
-from tkinter import Tk, Canvas, ALL
 import random
+from tkinter import Tk, Canvas, ALL
 
-from quadtree.quad import QuadTree, RADIUS, MULTIPLE
 from adk.region import Region, minValue, maxValue, X, Y
-
+from quadtree.quad import QuadTree
+from quadtree.util import RADIUS, MULTIPLE, HIT, DX, DY
 from quadtree.visualize import VisualizationWindow
-
-
-# Attributes for Circle
-# 0 (X) is its x-coordinate
-# 1 (Y) is its y-coordinate
-# 2 (RADIUS) is its radius
-# 3 (HIT) records whether involved in a collision
-# 4 (MULTIPLE) records whether circle is too big to fit in leaf node in quadtree
-HIT = 3      
-DX = 5
-DY = 6
-
-# With each passing frame, decrease by one to allow human-perception of collision
-MaxHit = 3
 
 # Refresh every 40 milliseconds
 frameDelay = 40
@@ -150,8 +135,7 @@ class QuadTreeFixedApp:
             circles = list(n.circles)
             for idx in range(len(circles)):
                 c = circles[idx]
-                
-                c[HIT] = max(0, c[HIT]-1)     # update hit status
+                c[HIT] = False
                 
                 if c[X] - c[RADIUS] + c[DX] <= self.tree.region.x_min:
                     c[DX] = -c[DX]
@@ -169,8 +153,8 @@ class QuadTreeFixedApp:
                     
                 # Update hit status for all colliding circles
                 for circ in self.tree.collide(c):
-                    circ[HIT] = MaxHit
-                    c[HIT] = MaxHit
+                    circ[HIT] = True
+                    c[HIT] = True
                 self.tree.add(c)
                 
         self.canvas.delete(ALL)

@@ -43,7 +43,7 @@ for s in circles:
         # Time naive O(m*n) algorithm for detecting collisions between m targets and n circles. 
         naive_total += min(timeit.Timer(
 '''
-from quadtree.quad import defaultCollision
+from quadtree.util import defaultCollision
 collisions = []
 for i in range(len(targets)):
     for j in range(len(circles)):
@@ -54,7 +54,7 @@ for i in range(len(targets)):
         # Time algorithm using Quadtree of n circles against which m targets are checked.
         quadtree_total += min(timeit.Timer(
 '''
-from quadtree.quad import defaultCollision
+from quadtree.util import defaultCollision
 collisions = []
 for target in targets:
     for s in qt.collide(target):
@@ -70,11 +70,11 @@ if __name__ == '__main__':
 # Sample Run:
 """
 n Naive Time Quadtree Time
-16 0.6529 0.5322
-32 1.6690 1.2049
-64 6.6617 2.8688
-128 26.5539 8.7543
-256 106.1730 21.5697
-512 430.5385 74.9178
-1024 1710.8403 252.3014
+16 0.4339 0.4631
+32 1.7081 1.1649
+64 6.7693 3.0700
+128 27.0727 9.1568
+256 108.3940 25.5643
+512 439.6468 81.6370
+1024 1754.4147 265.4411
 """

@@ -16,7 +16,7 @@
     Possibly extend to descendant instead of just child.
 """
 
-from quadtree.quad import NE, NW, SW, SE
+from quadtree.util import NE, NW, SW, SE
 from collections import defaultdict
 
 # Width,height in pixels for the nodes.
