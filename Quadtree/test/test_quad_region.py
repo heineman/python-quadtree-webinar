@@ -4,7 +4,7 @@ import unittest
 from quadtree.quad_region import QuadTree, NE, NW, SW, SE
 from adk.region import Region
 
-class TestBSTMethods(unittest.TestCase):
+class TestQuadRegionMethods(unittest.TestCase):
 
     def setUp(self):
         self.qt = QuadTree(Region(0,0,8,8))

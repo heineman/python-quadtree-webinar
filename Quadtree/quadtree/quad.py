@@ -65,6 +65,17 @@ def completelyContains(region, circle):
 
     return True
 
+def listContainsCircle(collection, circle):
+    """
+    Check if (x,y,radius) of circle already in collection.
+    Ignores other attributes (MULTIPLE and HIT in particular).
+    """
+    c = circle[0:3]
+    for idx in range(len(collection)):
+        if collection[idx][0:3] == c:
+            return True
+    return False
+
 def intersectsCircle(region, circle):
     """Returns True if circle intersects region, based on geometry. Be careful of open-ended regions."""
     rectOrigin = [ (region.x_min + region.x_max)//2, (region.y_min + region.y_max)//2]
@@ -96,7 +107,7 @@ class QuadNode:
         """Create QuadNode centered on origin of given region."""
         self.region = region
         self.origin = (region.x_min + (region.x_max - region.x_min)//2, region.y_min + (region.y_max - region.y_min)//2) 
-        self.children = [None]*4
+        self.children = [None] * 4
         self.circles = []
     
     def collide(self, circle):
@@ -117,7 +128,10 @@ class QuadNode:
                     yield c
  
     def add(self, circle):
-        """Add circle to the QuadNode, subdividing as needed."""
+        """
+        Add circle to the QuadNode, subdividing as needed. Returns True if
+        not already in collection; False otherwise.
+        """
         node = self
         while node:
             # Not part of this region
@@ -125,7 +139,10 @@ class QuadNode:
                 return False
         
             # Not yet subdivided? Then add to circles, subdividing once > 4
-            if node.children[NE] == None:
+            if node.children == [None] * 4:
+                if listContainsCircle(node.circles, circle):
+                    return False
+                
                 node.circles.append(circle)
                 if len(node.circles) > 4:
                     node.subdivide()
@@ -175,7 +192,6 @@ class QuadNode:
             else:
                 self.circles.append(circle)
                 circle[MULTIPLE] = True 
-    
     
     def quadrants(self, circle):
         """Determine quadrant(s) in which point exists."""
@@ -251,19 +267,52 @@ class QuadTree:
         return self.root.collide (circle)
     
     def remove(self, circle):
-        """Remove circle should it exist in QuadTree."""
+        """Remove circle should it exist in QuadTree. Return True on success."""
+        
+        # Find largest node which wholly contains circle
+        lastNode = None
         node = self.root
         while node:
             quads = node.quadrants (circle)
             if len(quads) == 1:
+                lastNode = node
                 node = node.children[quads[0]]
             else:
-                for i in range(len(node.circles)):
-                    if node.circles[i] == circle:
-                        del node.circles[i]
-                        return True
-    
+                lastNode = node
+                break
+                    
+        # lastNode is the only node which could contain circle
+        for idx in range(len(lastNode.circles)):
+            if lastNode.circles[idx][0:3] == circle[0:3]:
+                del lastNode.circles[idx]
+                return True
+        
         return False
+    
+    def __contains__(self, circle):
+        """Check whether exact circle (x,y,r) appears in QuadTree."""
+        if not intersectsCircle (self.region, circle):
+            return False
+        
+        # Find largest node which wholly contains circle
+        lastNode = None
+        node = self.root
+        while node:
+            # If leaf node, done
+            if node.children == [None] * 4:
+                lastNode = node
+                break
+             
+            quads = node.quadrants (circle)
+            if len(quads) == 1:
+                lastNode = node
+                node = node.children[quads[0]]
+            else:
+                lastNode = node
+                break
+                    
+        # lastNode is the only node which could contain circle
+        return listContainsCircle(lastNode.circles, circle)
     
     def __iter__(self):
         """Traverse and emit all circles in the QuadTree."""

@@ -62,7 +62,5 @@ class TestCollisionMethods(unittest.TestCase):
         self.assertFalse (intersectsCircle(r, [14, 23, 2, False, False]))  # miss to top
         self.assertFalse (intersectsCircle(r, [14, 7, 2, False, False]))   # miss to bottom
        
-        
-
 if __name__ == '__main__':
     unittest.main()    
