@@ -47,37 +47,39 @@ class QuadNode:
                 for c in self.children[q].collide(circle):
                     yield c
  
+    def isLeaf(self):
+        """Determine if QuadNode is a leaf node."""
+        return self.children == [None] * 4
+ 
     def add(self, circle):
         """
         Add circle to the QuadNode, subdividing as needed. Returns True if
         not already in collection; False otherwise.
         """
+        # Traverse to node whose enclosing region of circle is smallest in tree.
         node = self
-        while node:
-            # Not part of this region
-            if not intersectsCircle (node.region, circle):
-                return False
-        
-            # Not yet subdivided? Then add to circles, subdividing once > 4
-            if node.children == [None] * 4:
-                if listContainsCircle(node.circles, circle):
-                    return False
-                
-                node.circles.append(circle)
-                if len(node.circles) > 4:
-                    node.subdivide()
-                return True
-            
+        multiple = False
+        while not node.isLeaf():
             # Find quadrant(s) into which to add; if intersects two or more
             # then this node keeps it, otherwise we add to that child.
             quads = node.quadrants (circle)
             if len(quads) == 1:
                 node = node.children[quads[0]]
             else:
-                node.circles.append(circle)
-                return True
-            
-        return False
+                multiple = True
+                break
+
+        # Either reach leaf node or interior node that must store circle. 
+        # Check for uniqueness before adding. 
+        if listContainsCircle(node.circles, circle):
+            return False
+         
+        node.circles.append(circle) 
+        if node.isLeaf() and len(node.circles) > 4:
+            node.subdivide()
+        elif multiple:
+            circle[MULTIPLE] = True   
+        return True
 
     def remove(self, circle):
         """Remove circle from QuadNode. Does not adjust structure. Return True if updated information."""
@@ -114,7 +116,7 @@ class QuadNode:
                 circle[MULTIPLE] = True 
     
     def quadrants(self, circle):
-        """Determine quadrant(s) in which point exists."""
+        """Determine quadrant(s) intersecting this circle."""
         quads = []
         if intersectsCircle(self.children[NE].region, circle): quads.append(NE)
         if intersectsCircle(self.children[NW].region, circle): quads.append(NW)
@@ -172,6 +174,10 @@ class QuadTree:
         
     def add(self, circle):
         """Add circle to QuadTree."""
+        # Return if not within our bounds
+        if not intersectsCircle (self.region, circle):
+            return False
+        
         if self.root is None:
             self.root = QuadNode(self.region)
             self.root.add(circle)
@@ -219,7 +225,7 @@ class QuadTree:
         node = self.root
         while node:
             # If leaf node, done
-            if node.children == [None] * 4:
+            if node.isLeaf():
                 lastNode = node
                 break
              

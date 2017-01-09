@@ -10,17 +10,25 @@ from adk.region import X, Y
 # 2 (RADIUS) is its radius
 # 3 (HIT) records whether involved in a collision
 # 4 (MULTIPLE) records whether circle is too big to fit in leaf node in quadtree
+# 5 (DX) records velocity in x-axis for moving shape
+# 6 (DY) records velocity in y-axis for moving shape
+# 7 (ID) records the canvas ID once circle has been drawn (defaults to None if not drawn).
 RADIUS=2
 HIT = 3 
 MULTIPLE=4
 DX = 5
 DY = 6
+ID = 7
 
 # Each node can be subdivided into four quadrants.
 NE = 0
 NW = 1
 SW = 2
 SE = 3
+
+# Associated tags for canvas items: LINES for quadtree structure, CIRCLES for circles
+LINE='line'
+
 
 def distance(p, pt):
     """Compute distance from p to pt."""

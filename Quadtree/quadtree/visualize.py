@@ -19,13 +19,23 @@ class VisualizationWindow:
         self.frame.title("QuadTree Visualization")
         self.canvas.pack()
         self.label = label
+        self.frame.protocol("WM_DELETE_WINDOW", self.closed)
+        self.done = False
 
     def clear(self):
         """Clear everything."""
         self.canvas.delete(ALL)
 
+    def closed(self):
+        """Once closed, stop all visualizations and destroy frame."""
+        self.done = True
+        self.frame.destroy()
+
     def plot(self, tree):
         """Given DrawTree information, plot the quadtree."""
+        if self.done:
+            return
+        
         self.canvas.delete(ALL)
         if tree is None:
             return
