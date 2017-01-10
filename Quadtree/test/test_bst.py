@@ -27,7 +27,7 @@ class TestBSTMethods(unittest.TestCase):
         self.assertTrue("teach" in self.bst)
         
     def test_sameStarting(self):
-        """Test interesting function that computes words with same starting letters."""
+        """Test function that computes words with same starting letters."""
         self.populate()
         
         # convert to list to use in multiple assertions.

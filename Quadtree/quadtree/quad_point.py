@@ -3,16 +3,16 @@
     
     Every Quad Node has up to four children, partitioning space accordingly based on 
     NE, NW, SW, SE quadrants. Each Node evenly divides quadrants. Each node can store
-    4 points, after which it must be subdivided to store additional points.
+    4 points, after which it must be subdivided.
     
-    The Quadtree implements set-semantics. This means there are no duplicate (x, y)
+    A quadtree implements set-semantics. This means there are no duplicate (x, y)
     points in a quadtree.
     
     Actual point objects only exist within the leaf nodes.
     
     Note that this data structure is not suitable for collision detection of
     two-dimensional shapes, but is shown here as a starting data structure to 
-    prepare for the proper quadtree structure.
+    prepare for proper collision detection.
 """
 
 from adk.region import X, Y, Region
@@ -23,7 +23,8 @@ class QuadNode:
     def __init__(self, region, pt = None):
         """Create empty QuadNode centered on origin of given region."""
         self.region = region
-        self.origin = (region.x_min + (region.x_max - region.x_min)//2, region.y_min + (region.y_max - region.y_min)//2) 
+        self.origin = (region.x_min + (region.x_max - region.x_min)//2, 
+                       region.y_min + (region.y_max - region.y_min)//2) 
         self.children = [None] * 4
         
         if pt:
@@ -46,7 +47,7 @@ class QuadNode:
     def add(self, pt):
         """Add pt to the QuadNode, if not already present."""
         # Doesn't fit in this node (sanity check: not truly needed since tree checks)
-        if not containsPoint (self.region, pt):
+        if not containsPoint(self.region, pt):
             return False
 
         node = self
@@ -64,10 +65,10 @@ class QuadNode:
                     node.subdivide()
             
             # Find quadrant into which to add
-            q = node.quadrant(pt)
-            if node.children[q] is None:
-                node.children[q] = node.subquadrant(q)
-            node = node.children[q]
+            quad = node.quadrant(pt)
+            if node.children[quad] is None:
+                node.children[quad] = node.subquadrant(quad)
+            node = node.children[quad]
             
         return False
 
@@ -85,10 +86,10 @@ class QuadNode:
                 del self.points[idx]
                 return (self, True)
         
-        q = self.quadrant(pt)
+        quad = self.quadrant(pt)
         updated = False
-        if self.children[q]:
-            self.children[q],updated = self.children[q].remove(pt)
+        if self.children[quad]:
+            self.children[quad],updated = self.children[quad].remove(pt)
             
         # if all children None, so are we, otherwise return self.
         if self.countChildren() == 0:
@@ -96,16 +97,16 @@ class QuadNode:
     
         return (self, updated)
 
-    def subquadrant(self, q):
+    def subquadrant(self, quad):
         """Create QuadNode associated with sub-quadrant for parent region."""
         r = self.region
-        if q == NE:
+        if quad == NE:
             return QuadNode(Region(self.origin[X], self.origin[Y], r.x_max,        r.y_max))
-        elif q == NW:
+        elif quad == NW:
             return QuadNode(Region(r.x_min,        self.origin[Y], self.origin[X], r.y_max))
-        elif q == SW: 
+        elif quad == SW: 
             return QuadNode(Region(r.x_min,        r.y_min,        self.origin[X], self.origin[Y]))
-        elif q == SE:
+        elif quad == SE:
             return QuadNode(Region(self.origin[X], r.y_min,        r.x_max,        self.origin[Y]))
         
     def subdivide(self):
@@ -113,10 +114,10 @@ class QuadNode:
         self.children = [None] * 4
         
         for pt in self.points:
-            q = self.quadrant(pt)
-            if self.children[q] == None:
-                self.children[q] = self.subquadrant(q)
-            self.children[q].add(pt)
+            quad = self.quadrant(pt)
+            if self.children[quad] == None:
+                self.children[quad] = self.subquadrant(quad)
+            self.children[quad].add(pt)
             
         # no longer capable of storing points, since interior node
         self.points = None
@@ -168,7 +169,7 @@ class QuadTree:
         
     def add(self, pt):
         """Add point to QuadTree."""
-        # Not able to fit in this node
+        # Not able to fit in this tree
         if not containsPoint(self.region, pt):
             return False
 
@@ -176,14 +177,14 @@ class QuadTree:
             self.root = QuadNode(self.region, pt)
             return True
         
-        return self.root.add (pt)
+        return self.root.add(pt)
     
     def remove(self, pt):
         """Remove pt should it exist in tree."""
         if self.root is None:
             return False
         
-        if not containsPoint (self.region, pt):
+        if not containsPoint(self.region, pt):
             return False
         
         self.root,updated = self.root.remove(pt)
@@ -191,21 +192,21 @@ class QuadTree:
     
     def __contains__(self, pt):
         """Check whether exact point appears in QuadTree."""
-        n = self.root
-        while n:
-            if n.points != None and pt in n.points:
+        node = self.root
+        while node:
+            if node.points != None and pt in node.points:
                 return True
 
-            q = n.quadrant(pt)
-            n = n.children[q]
+            quad = node.quadrant(pt)
+            node = node.children[quad]
     
         return False
     
     def __iter__(self):
         """Pre-order traversal of points in the tree."""
         if self.root:
-            for n in self.root.preorder():
-                if n.points:
-                    for pt in n.points:
+            for node in self.root.preorder():
+                if node.points:
+                    for pt in node.points:
                         yield pt
         

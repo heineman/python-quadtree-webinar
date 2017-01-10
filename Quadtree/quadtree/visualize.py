@@ -19,6 +19,8 @@ class VisualizationWindow:
         self.frame.title("QuadTree Visualization")
         self.canvas.pack()
         self.label = label
+        
+        # React to window closure events
         self.frame.protocol("WM_DELETE_WINDOW", self.closed)
         self.done = False
 

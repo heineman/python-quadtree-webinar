@@ -1,5 +1,5 @@
 """
-    Prototype app for adding points to an 8x8 quadtree with quad0 initial implementation.
+    Prototype for adding points to an 8x8 quadtree with quad0 initial implementation.
 """
 
 from tkinter import Tk, Canvas, ALL

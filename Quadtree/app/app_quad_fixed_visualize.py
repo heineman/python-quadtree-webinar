@@ -85,11 +85,14 @@ class QuadTreeFixedApp:
 
         # draw rectangular region with criss-crossed hashed lines 
         r = node.region
-        self.canvas.create_rectangle(r.x_min, self.toTk(r.y_min), r.x_max, self.toTk(r.y_max))
+        self.canvas.create_rectangle(r.x_min, self.toTk(r.y_min), 
+                                     r.x_max, self.toTk(r.y_max))
          
-        self.canvas.create_line(r.x_min, self.toTk(node.origin[Y]), r.x_max, self.toTk(node.origin[Y]),
-                                 dash=(2, 4)) 
-        self.canvas.create_line(node.origin[X], self.toTk(r.y_min), node.origin[X], self.toTk(r.y_max),
+        self.canvas.create_line(r.x_min, self.toTk(node.origin[Y]), 
+                                r.x_max, self.toTk(node.origin[Y]),
+                                dash=(2, 4))
+        self.canvas.create_line(node.origin[X], self.toTk(r.y_min), 
+                                node.origin[X], self.toTk(r.y_max),
                                 dash=(2, 4))
          
         for circle in node.circles:

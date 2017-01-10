@@ -186,9 +186,14 @@ class DrawTree(object):
                            font=font,
                            width=node_w, text=text)
 
-    def prettyPrint(self, indent=''):
-        """Print out the tree for debugging."""
-        print (indent + str(self.x) + "," + str(self.y) + " " + str(self.node.region))
+    def indent(self, tab):
+        """Helper method to pretty-print draw_tree with indentation."""
+        s = '\n%s%s,%s %s' % (tab, self.x, self.y, self.node.region)
         for quad in range(len(self.children)):
             if self.children[quad] is not None:
-                self.children[quad].prettyPrint(indent + '  ')
+                s += self.children[quad].indent(tab + '  ')
+        return s
+
+    def __str__(self):
+        """Return string representation of tree for debugging."""
+        return self.indent('')

@@ -8,25 +8,25 @@
     Two or more identical circles can exist.
     
     Because the circles are two-dimensional, they may intersect two (or more) of the 
-    subregions in the quadtree. Therefore, each circle is stored in the highest node in 
-    the tree whose associated region fully encloses the circle.
+    subregions in the quadtree. Therefore, each circle is stored in the highest node  
+    in the tree whose associated region fully encloses the circle.
     
-    When the circles are large, this means the resulting quadtree might be skewed with 
-    far too many circles stored in upper nodes. 
-   
+    When the circles are large, this means the resulting quadtree might be skewed  
+    with far too many circles stored in upper nodes. 
 """
 
 from adk.region import Region, X, Y
 from quadtree.util import intersectsCircle, listContainsCircle, defaultCollision
 from quadtree.util import NE, NW, SW, SE, MULTIPLE
-from quadtree.util import smaller2k, larger2k
+from quadtree.util import smaller2k, larger2k, deleteIfExists
 
 class QuadNode:
     
     def __init__(self, region):
         """Create QuadNode centered on origin of given region."""
         self.region = region
-        self.origin = (region.x_min + (region.x_max - region.x_min)//2, region.y_min + (region.y_max - region.y_min)//2) 
+        self.origin = (region.x_min + (region.x_max - region.x_min)//2, 
+                       region.y_min + (region.y_max - region.y_min)//2) 
         self.children = [None] * 4
         self.circles = []
     
@@ -34,7 +34,7 @@ class QuadNode:
         """Yield circles that intersect with circle."""
         
         # Circle must intersect
-        if intersectsCircle (self.region, circle):
+        if intersectsCircle(self.region, circle):
             # if we have circles, must check them
             for c in self.circles:
                 if QuadTree.collision(c, circle):
@@ -43,8 +43,8 @@ class QuadNode:
             # If subquadrants, find quadrant(s) into which to check further 
             if self.children[NE] == None: return
             
-            for q in self.quadrants(circle):
-                for c in self.children[q].collide(circle):
+            for quad in self.quadrants(circle):
+                for c in self.children[quad].collide(circle):
                     yield c
  
     def isLeaf(self):
@@ -57,20 +57,21 @@ class QuadNode:
         not already in collection; False otherwise.
         """
         # Traverse to node whose enclosing region of circle is smallest in tree.
+        # Assume that circle will ultimately fit entirely within a leaf node.
         node = self
         multiple = False
         while not node.isLeaf():
             # Find quadrant(s) into which to add; if intersects two or more
             # then this node keeps it, otherwise we add to that child.
-            quads = node.quadrants (circle)
+            quads = node.quadrants(circle)
             if len(quads) == 1:
                 node = node.children[quads[0]]
             else:
                 multiple = True
                 break
 
-        # Either reach leaf node or interior node that must store circle. 
-        # Check for uniqueness before adding. 
+        # Either reach leaf node or stop at interior node that must store  
+        # circle. Check for uniqueness before adding. 
         if listContainsCircle(node.circles, circle):
             return False
          
@@ -80,16 +81,6 @@ class QuadNode:
         elif multiple:
             circle[MULTIPLE] = True   
         return True
-
-    def remove(self, circle):
-        """Remove circle from QuadNode. Does not adjust structure. Return True if updated information."""
-        if self.circles != None:
-            if circle in self.circles:
-                idx = self.circles.index(circle)
-                del self.circles[idx]
-                return True
-            
-        return False
 
     def subdivide(self):
         """Add four children nodes to node and reassign existing circles."""
@@ -158,7 +149,7 @@ class QuadTree:
     def __init__(self, region):
         """
         Create QuadTree defined over existing rectangular region. Assume that (0,0) is
-        the lower left coordinate and the half-length side of any square in quadtree
+        the lower-left coordinate and the half-length side of any square in quadtree
         is power of 2. If incoming region is too small, this expands accordingly.    
         """
         self.root = None
@@ -175,7 +166,7 @@ class QuadTree:
     def add(self, circle):
         """Add circle to QuadTree."""
         # Return if not within our bounds
-        if not intersectsCircle (self.region, circle):
+        if not intersectsCircle(self.region, circle):
             return False
         
         if self.root is None:
@@ -183,14 +174,14 @@ class QuadTree:
             self.root.add(circle)
             return True
         
-        return self.root.add (circle)
+        return self.root.add(circle)
     
     def collide(self, circle):
         """Return collisions to circle within QuadTree."""
         if self.root is None:
             return iter([])
         
-        return self.root.collide (circle)
+        return self.root.collide(circle)
     
     def remove(self, circle):
         """Remove circle should it exist in QuadTree. Return True on success."""
@@ -199,7 +190,7 @@ class QuadTree:
         lastNode = None
         node = self.root
         while node:
-            quads = node.quadrants (circle)
+            quads = node.quadrants(circle)
             if len(quads) == 1:
                 lastNode = node
                 node = node.children[quads[0]]
@@ -208,16 +199,11 @@ class QuadTree:
                 break
                     
         # lastNode is the only node which could contain circle
-        for idx in range(len(lastNode.circles)):
-            if lastNode.circles[idx][0:3] == circle[0:3]:
-                del lastNode.circles[idx]
-                return True
-        
-        return False
+        return deleteIfExists(lastNode, circle)
     
     def __contains__(self, circle):
         """Check whether exact circle (x,y,r) appears in QuadTree."""
-        if not intersectsCircle (self.region, circle):
+        if not intersectsCircle(self.region, circle):
             return False
         
         # Find largest node which wholly contains circle
@@ -229,7 +215,7 @@ class QuadTree:
                 lastNode = node
                 break
              
-            quads = node.quadrants (circle)
+            quads = node.quadrants(circle)
             if len(quads) == 1:
                 lastNode = node
                 node = node.children[quads[0]]
@@ -243,7 +229,7 @@ class QuadTree:
     def __iter__(self):
         """Traverse and emit all circles in the QuadTree."""
         if self.root:
-            for n in self.root.preorder():
-                if n.circles:
-                    for c in n.circles:
+            for node in self.root.preorder():
+                if node.circles:
+                    for c in node.circles:
                         yield c

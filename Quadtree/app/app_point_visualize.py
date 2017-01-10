@@ -6,7 +6,6 @@
     Max tree size is 512x512 and scale factor determines the size of
     the individual points in the tree in pixels. For example, factor=64
     means that there are 8x8 points.
-    
 """
 
 from tkinter import Tk, Canvas, ALL
@@ -98,7 +97,7 @@ class QuadTreePointApp:
         self.visit(self.tree.root)
         self.viz.clear()
         
-    def visit (self, node):
+    def visit(self, node):
         """Visit nodes recursively."""
         if node == None: 
             return

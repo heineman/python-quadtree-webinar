@@ -24,7 +24,7 @@ class TestQuadPointMethods(unittest.TestCase):
        
     def test_adding(self):
         for _ in range(1000):
-            # make sure these are all even indices (within 0..1023, even incremented ones)
+            # make sure these are even (within 0..1023, even incremented ones)
             x = random.randint(0,1021)
             if x % 2 == 1: 
                 x += 1

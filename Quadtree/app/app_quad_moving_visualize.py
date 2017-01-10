@@ -8,8 +8,7 @@
     that adjusts position every frameDelay milliseconds.
     
     Offers alternative to updating moving circles by taking advantage of ability
-    in tk to move items previously drawn to a canvas.
-    
+    in tk to move items previously drawn to a canvas.    
 """
 import random
 from tkinter import Tk, Canvas, ALL
@@ -107,18 +106,16 @@ class QuadTreeFixedApp:
 
         # draw rectangular region with criss-crossed hashed lines 
         r = node.region
-        self.canvas.create_rectangle(r.x_min, self.toTk(r.y_min), r.x_max, self.toTk(r.y_max), tag=LINE)
+        self.canvas.create_rectangle(r.x_min, self.toTk(r.y_min), 
+                                     r.x_max, self.toTk(r.y_max), tag=LINE)
          
-        self.canvas.create_line(r.x_min, self.toTk(node.origin[Y]), r.x_max, self.toTk(node.origin[Y]),
+        self.canvas.create_line(r.x_min, self.toTk(node.origin[Y]), 
+                                r.x_max, self.toTk(node.origin[Y]),
                                 dash=(2, 4), tag=LINE) 
-        self.canvas.create_line(node.origin[X], self.toTk(r.y_min), node.origin[X], self.toTk(r.y_max),
+        self.canvas.create_line(node.origin[X], self.toTk(r.y_min), 
+                                node.origin[X], self.toTk(r.y_max),
                                 dash=(2, 4), tag=LINE)
          
-#         for circle in node.circles:
-#             markColor = 'black'
-#             if circle[MULTIPLE]: markColor = 'blue'
-#             if circle[HIT]: markColor = 'red'
-#             self.canvas.itemconfig(circle[ID], fill=markColor)
         for n in node.children:
             self.visit(n)
             

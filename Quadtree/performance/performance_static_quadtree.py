@@ -14,15 +14,17 @@ def performance():
         circles = []
         targets = []
         for _ in range(n):
-            circle = [random.randint(0,512), random.randint(0,512), random.randint(4, maxRadius), False, False, 0, 0]
+            circle = [random.randint(0,512), random.randint(0,512), 
+                      random.randint(4, maxRadius), False, False, 0, 0]
             circles.append(circle)
             
         for _ in range(n):
-            target = [random.randint(0,512), random.randint(0,512), random.randint(4, maxRadius), False, False, 0, 0]
+            target = [random.randint(0,512), random.randint(0,512), 
+                      random.randint(4, maxRadius), False, False, 0, 0]
             targets.append(target)
             
-        # Construct circles as the initial set and a collection of target circles to be
-        # used to check for intersections with the original set. 
+        # Construct circles as the initial set and a collection of target circles 
+        # to be used to check for intersections with the original set. 
         setup='''
 from quadtree.quad import QuadTree
 from adk.region import Region
@@ -30,9 +32,10 @@ targets = []
 circles = []
 '''
         for circle in circles:
-            setup = setup + "\ncircles.append([%d,%d,%d,%d,False,False,0,0])" % (circle[0], circle[1], circle[2], circle[3])
+            setup = setup + "\ncircles.append([" + ','.join(map(str,circle)) + "])" 
+
         for target in targets:
-            setup = setup + "\ntargets.append([%d,%d,%d,%d,False,False,0,0])" % (target[0], target[1], target[2], target[3])
+            setup = setup + "\ntargets.append([" + ','.join(map(str,target)) + "])" 
         
         setup = setup + '''
 qt = QuadTree(Region(0,0,512,512))
@@ -40,7 +43,7 @@ for s in circles:
     qt.add(s)
 '''
 
-        # Time naive O(m*n) algorithm for detecting collisions between m targets and n circles. 
+        # Time naive O(m*n) algorithm for detecting collisions 
         naive_total += min(timeit.Timer(
 '''
 from quadtree.util import defaultCollision
@@ -51,7 +54,7 @@ for i in range(len(targets)):
              collisions.append([targets[i], circles[j]])
 #print ("numCol:" + str(len(collisions)))''', setup=setup).repeat(5,numTrials))
            
-        # Time algorithm using Quadtree of n circles against which m targets are checked.
+        # Time algorithm using Quadtree for detecting collisions
         quadtree_total += min(timeit.Timer(
 '''
 from quadtree.util import defaultCollision
