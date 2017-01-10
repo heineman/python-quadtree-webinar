@@ -29,8 +29,8 @@ node_h = 25
 magx = 30
 magy = 80
 
-# Inset drawing by 2 pixels on top and left so nodes fully appear
-inset = 2
+# Inset drawing by 4 pixels on top and left so nodes fully appear
+inset = 4
 
 class DrawTree(object):
     """
