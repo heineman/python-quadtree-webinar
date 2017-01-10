@@ -1,1 +1,1 @@
-__all__ = ["test_bst", "test_collision", "test_quad_point"]
+__all__ = ["test_bst", "test_collision", "test_quad_point", "test_quad_region", "test_quad"]

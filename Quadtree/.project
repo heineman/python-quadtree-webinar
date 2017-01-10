@@ -3,7 +3,6 @@
 	<name>Quadtree</name>
 	<comment></comment>
 	<projects>
-		<project>PythonCode</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

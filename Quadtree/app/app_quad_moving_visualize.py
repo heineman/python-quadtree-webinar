@@ -4,11 +4,11 @@
     
     Left mouse adds circle.
     
-    Creates movable circles by using a random (dx, dy) velocity with each circle
-    that adjusts position every frameDelay milliseconds.
+    Creates movable circles by using a random (dx, dy) velocity with each 
+    circle that adjusts position every frameDelay milliseconds.
     
-    Offers alternative to updating moving circles by taking advantage of ability
-    in tk to move items previously drawn to a canvas.    
+    Offers alternative to updating moving circles by taking advantage of 
+    ability in tk to move items previously drawn to a canvas.    
 """
 import random
 from tkinter import Tk, Canvas, ALL
@@ -38,7 +38,7 @@ class QuadTreeFixedApp:
     pausedTitle  = 'Left-Click resumes. Right-click resets.'
     
     def __init__(self, master):
-        """App for creating QuadTree with moving circles that detect collisions."""
+        """App for detect collisions between moving circles using QuadTree."""
         
         master.title(QuadTreeFixedApp.defaultTitle) 
         self.master = master 
@@ -168,7 +168,8 @@ class QuadTreeFixedApp:
                 if c[HIT]: markColor = 'red'
                 
                 if c[ID] is None:
-                    c[ID] = self.canvas.create_oval(c[X] - c[RADIUS], self.toTk(c[Y]) - c[RADIUS], 
+                    c[ID] = self.canvas.create_oval(c[X] - c[RADIUS], 
+                                 self.toTk(c[Y]) - c[RADIUS], 
                                  c[X] + c[RADIUS], self.toTk(c[Y]) + c[RADIUS],
                                  fill=markColor) 
                 else:

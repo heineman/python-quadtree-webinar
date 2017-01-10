@@ -4,16 +4,11 @@
     Layout inspired by https://llimllib.github.io/pymag-trees/
     
     Accepts any structure that has 'children' list attribute with up to
-    four child nodes. May still produce some layouts that have overlapping nodes
-    but works for the most part.
+    four child nodes. May still produce some layouts that have overlapping 
+    nodes but works for the most part.
 
-    Note: Before use, must externally set the small/large fonts to use, otherwise
-    the default one is likely too small to see.
-    
-    Multiple adjustNN code suggests different layout heuristics. One I would like
-    to add is to ensure a node N's left-most child is to the right of the 
-    right-most child of the left-sibling of N (read that twice and it makes sense).
-    Possibly extend to descendant instead of just child.
+    Note: Before use, must externally set the small/large fonts to use, 
+    otherwise the default one is likely too small to see.
 """
 
 from quadtree.util import NE, NW, SW, SE
@@ -48,7 +43,7 @@ class DrawTree(object):
     
     
     def __init__(self, qtnode, depth=0, label=None):
-        """Recursively construct DrawTree structure to parallel quadtree node."""
+        """Recursively construct DrawTree to parallel quadtree node."""
         self.label = label
         self.x = -1
         self.y = depth

@@ -8,7 +8,6 @@
     means that there are 8x8 points.
     
     Zoomable canvas by pressing "+" or "-" to manipulate pixel point size
-    
 """
 
 from tkinter import Tk, Canvas, ALL

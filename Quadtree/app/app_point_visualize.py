@@ -6,6 +6,8 @@
     Max tree size is 512x512 and scale factor determines the size of
     the individual points in the tree in pixels. For example, factor=64
     means that there are 8x8 points.
+    
+    Zoomable canvas by pressing "+" or "-" to manipulate pixel point size
 """
 
 from tkinter import Tk, Canvas, ALL
@@ -44,8 +46,8 @@ class QuadTreePointApp:
 
     def zoom(self, key):
         """
-        Zoom in (+) and Zoom out (-) with key events. In rebuilding tree, some
-        points may get lost when zooming in.
+        Zoom in (+) and Zoom out (-) with key events. In rebuilding tree, 
+        some points may get lost when zooming in.
         """
         factor = self.factor
         if key.char == '+':
