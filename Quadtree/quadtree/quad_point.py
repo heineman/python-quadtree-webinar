@@ -69,8 +69,6 @@ class QuadNode:
             if node.children[quad] is None:
                 node.children[quad] = node.subquadrant(quad)
             node = node.children[quad]
-            
-        return False
 
     def remove(self, pt):
         """

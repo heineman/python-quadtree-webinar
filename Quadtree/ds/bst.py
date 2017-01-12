@@ -4,7 +4,7 @@
     This class is not to be used in production code. Shown here to demonstrate the
     simple logic yet drastic inefficiencies when tree degenerates. 
 
-    Find full details on balanced BSTs in "Algorithms in a Nutshell, 2ed", 
+    Find full details on balanced BSTs in "Algorithms in a Nutshell, 2ed" 
     http://shop.oreilly.com/product/0636920032885.do    
 """
 
@@ -13,7 +13,7 @@ class BinaryNode:
     def __init__(self, value = None):
         """Create Binary Node."""
         self.value = value
-        self.left = None
+        self.left  = None
         self.right = None
 
     def add(self, val):
@@ -29,8 +29,8 @@ class BinaryNode:
             else:
                 self.right = BinaryNode(val)
 
-    def sameStartingLetter (self, letter):
-        """Follow inorder template to yield words starting with given letter."""
+    def sameStartingLetter(self, letter):
+        """Follow in-order template to yield words starting with given letter."""
         if self.left and self.value[0] >= letter[0]:
             for word in self.left.sameStartingLetter(letter):
                 yield word
@@ -46,14 +46,14 @@ class BinaryNode:
     def inorder(self):
         """In-order traversal of tree rooted at given node."""
         if self.left:
-            for n in self.left.inorder():
-                yield n
+            for node in self.left.inorder():
+                yield node
 
         yield self.value
 
         if self.right:
-            for n in self.right.inorder():
-                yield n
+            for node in self.right.inorder():
+                yield node
 
 class BinaryTree:
 
@@ -85,13 +85,13 @@ class BinaryTree:
         if self.root:
             return self.root.inorder()
                                 
-    def sameStartingLetter (self, letter):
+    def sameStartingLetter(self, letter):
         """Return iterator of words starting with same given letter."""
         if self.root:
             for word in self.root.sameStartingLetter(letter):
                 yield word
                 
-    def findAnagrams (self, target):
+    def findAnagrams(self, target):
         """Return iterator of words that are anagrams for given target word."""
         if self.root:
             target = ''.join(sorted(target))

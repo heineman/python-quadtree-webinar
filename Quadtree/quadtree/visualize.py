@@ -9,8 +9,8 @@ class VisualizationWindow:
     def __init__(self, master, label=None):
         """label is function for DrawTree that takes node and returns int."""
         self.master = master
-        self.frame = Toplevel(width=1024, height=512)
-        self.canvas = Canvas(self.frame, width=1024, height=512)        
+        self.frame = Toplevel(width=960, height=512)
+        self.canvas = Canvas(self.frame, width=960, height=512)        
 
         # Initialize appropriate fonts to use
         DrawTree.smallFont = Font(family='Times', size='14')
