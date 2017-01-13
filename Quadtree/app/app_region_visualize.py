@@ -18,10 +18,10 @@ from adk.region import Region, minValue, maxValue, X, Y
 from quadtree.visualize import VisualizationWindow
 
 def label(node):
-    """Return size as label."""
+    """Show size as label."""
     return node.region.x_max - node.region.x_min
 
-class QuadTreePointApp:
+class QuadTreeRegionApp:
     
     def __init__(self, master, factor):
         """App for creating point-based quadtree dynamically."""
@@ -45,8 +45,8 @@ class QuadTreePointApp:
 
     def zoom(self, key):
         """
-        Zoom in (+) and Zoom out (-) with key events. In rebuilding tree, some
-        points may get lost when zooming in.
+        Zoom in (+) and Zoom out (-) with key events. In rebuilding tree, 
+        some points may get lost when zooming in.
         """
         factor = self.factor
         if key.char == '+':
@@ -66,7 +66,7 @@ class QuadTreePointApp:
                 
             self.visit(self.tree.root)
             self.viz.plot(self.tree.root)
-        
+
     def toCartesian(self, y):
         """Convert tkinter point into Cartesian."""
         return self.canvas.winfo_height() - y
@@ -98,7 +98,7 @@ class QuadTreePointApp:
         self.visit(self.tree.root)
         self.viz.clear()
         
-    def visit (self, node):
+    def visit(self, node):
         """Visit nodes recursively."""
         if node == None: 
             return
@@ -134,6 +134,6 @@ class QuadTreePointApp:
             
 if __name__ == '__main__':
     root = Tk()
-    app = QuadTreePointApp(root, 64)     # parameter is size of each square by pixels
+    app = QuadTreeRegionApp(root, 64)     # pixels are 8x8 in size (or 512/64)
     app.viz = VisualizationWindow(root, label)
     root.mainloop()

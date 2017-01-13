@@ -9,10 +9,8 @@ from adk.region import Region, minValue, maxValue, X, Y
 from quadtree.visualize import VisualizationWindow
 
 def label(node):
-    """Show number of points as label."""
-    if node.points is None:
-        return 0
-    return len(node.points)
+    """Show size as label."""
+    return node.region.x_max - node.region.x_min
 
 class QuadTreePointApp:
     
@@ -85,13 +83,14 @@ class QuadTreePointApp:
                                 self.toTk(64 * r.y_max),
                                 dash=(2,4))
          
-        if node.points:
-            for pt in node.points:
-                self.canvas.create_rectangle(64 * pt[X],
-                                             self.toTk(64 * pt[Y]),
-                                             64 * (pt[X]+1),
-                                             self.toTk(64 * (pt[Y]+1)),
-                                             fill='black')
+        if node.isPoint() or node.full:
+            pt = [node.region.x_min, node.region.y_min]
+            width = node.region.x_max - node.region.x_min
+            self.canvas.create_rectangle(64 * pt[X],
+                                         self.toTk(64 * pt[Y]),
+                                         64 * (pt[X]+width),
+                                         self.toTk(64 * (pt[Y]+width)),
+                                         fill='black')
         for n in node.children:
             self.visit(n)
             

@@ -19,13 +19,8 @@
 """
 
 from adk.region import X, Y, Region
-from quadtree.util import smaller2k, larger2k, containsPoint
+from quadtree.util import smaller2k, larger2k, containsPoint, NE, NW, SW, SE
 
-# Quadrant constants
-NE = 0
-NW = 1
-SW = 2
-SE = 3
 
 class QuadNode:
     
