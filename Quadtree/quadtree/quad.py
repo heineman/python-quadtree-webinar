@@ -33,14 +33,14 @@ class QuadNode:
     def collide(self, circle):
         """Yield circles that intersect with circle."""
         
-        # Circle must intersect
+        # Only proceed if circle intersects region
         if intersectsCircle(self.region, circle):
             # if we have circles, must check them
             for c in self.circles:
                 if QuadTree.collision(c, circle):
                     yield c
             
-            # If subquadrants, find quadrant(s) into which to check further 
+            # Done if no sub-quadrants exist
             if self.children[NE] == None: return
             
             for quad in self.quadrants(circle):
@@ -78,7 +78,7 @@ class QuadNode:
         node.circles.append(circle) 
         if node.isLeaf() and len(node.circles) > 4:
             node.subdivide()
-        elif multiple:
+        if multiple:
             circle[MULTIPLE] = True   
         return True
 

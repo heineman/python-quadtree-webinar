@@ -29,11 +29,11 @@ def collide(node, circle):
             for c in node.points:
                 if defaultCollision(c, circle):
                     yield c
-        
-        # Find sub-quadrant into which to check further 
-        q = node.quadrant(circle)
-        for c in collide(node.children[q], circle):
-            yield c
+        else:
+            # Find sub-quadrant into which to check further 
+            quad = node.quadrant(circle)
+            for c in collide(node.children[quad], circle):
+                yield c
 
 class QuadTreeInvalidApp:
     

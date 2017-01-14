@@ -133,7 +133,6 @@ class QuadTreeFixedApp:
         for n in nodes:
             for c in n.circles:
                 c[HIT] = False
-                c[MULTIPLE] = False
                 
                 dx = dy = 0
                 if c[X] - c[RADIUS] + c[DX] <= self.tree.region.x_min:
