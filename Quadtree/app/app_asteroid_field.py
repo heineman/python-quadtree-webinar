@@ -51,7 +51,7 @@ class AsteroidsApp:
         self.canvas.bind("<Button-1>", self.start)
         
         master.bind("<Key>", self.action)
-        master.bind("<KeyRelease-l>", self.clear)
+        master.bind("<KeyRelease>", self.clear)
         self.canvas.pack()
         self.ship = None
         self.bullets = []
@@ -96,13 +96,14 @@ class AsteroidsApp:
         return tk_y
     
     def clear(self, key):
-        self.thrust = False
+        if key.char == 'l':
+            self.thrust = False
     
     def action(self, key):
         """
         Detect Thrust (L), Turn Right (D), Turn Left (A) and Fire (SPACE)
         """
-        if self.destroyed:
+        if self.ship is None:
             return
         
         if key.char == 'l':
