@@ -109,10 +109,11 @@ class QuadNode:
     def quadrants(self, circle):
         """Determine quadrant(s) intersecting this circle."""
         quads = []
-        if intersectsCircle(self.children[NE].region, circle): quads.append(NE)
-        if intersectsCircle(self.children[NW].region, circle): quads.append(NW)
-        if intersectsCircle(self.children[SW].region, circle): quads.append(SW)
-        if intersectsCircle(self.children[SE].region, circle): quads.append(SE)
+        if not self.isLeaf():
+            if intersectsCircle(self.children[NE].region, circle): quads.append(NE)
+            if intersectsCircle(self.children[NW].region, circle): quads.append(NW)
+            if intersectsCircle(self.children[SW].region, circle): quads.append(SW)
+            if intersectsCircle(self.children[SE].region, circle): quads.append(SE)
         return quads
     
     def quadrant(self, pt):

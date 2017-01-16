@@ -1,4 +1,3 @@
-import random
 import unittest
 
 from quadtree.quad import QuadTree
@@ -26,6 +25,21 @@ class TestQuadMethods(unittest.TestCase):
         # already present.
         self.assertFalse(self.qt.add([33, 11, 10, False, False]))
     
+    def test_remove_less_than_four(self):
+        self.qt = QuadTree(Region(0,0,1024,1024))
+        
+        self.qt.add([22, 40, 10, False, False])
+        self.qt.add([13, 59, 20, False, False])
+        self.qt.add([57, 37, 30, False, False])
+        
+        self.assertTrue(self.qt.remove([57, 37, 30]))
+        self.assertTrue(self.qt.remove([13, 59, 20]))
+        self.assertTrue(self.qt.remove([22, 40, 10]))
+        
+        self.assertFalse(self.qt.remove([57, 37, 30]))
+        self.assertFalse(self.qt.remove([13, 59, 20]))
+        self.assertFalse(self.qt.remove([22, 40, 10]))
+        
     def test_remove(self):
         self.assertTrue (self.qt.remove([57, 37, 30]))
         ct = 0
