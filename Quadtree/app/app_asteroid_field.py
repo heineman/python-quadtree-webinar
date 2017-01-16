@@ -1,9 +1,23 @@
 """
-    Sample Game for moving circles that collide and redirect each other, 
-    with diminished mass (i.e., Radius).   
+    Sample Game in which a triangular ship navigates amongst a collection of
+    moving asteroids, trying to shoot and destroy all asteroids before 
+    colliding with one of them.
     
-    http://gamedev.stackexchange.com/questions/31876/2d-collision-in-canvas-balls-overlapping-when-velocity-is-high
+    Actions:
+      A      -- rotate left
+      D      -- rotate right
+      L      -- engage thrust
+      SPACE  -- fire
+      
+    Asteroids are randomly formed and move throughout the region; when an 
+    edge is reached, an asteroid appears on the other edg (i.e., wraps around)
     
+    Collision detection appears in four places:
+       1. When initializing the field of play, must make sure randomly
+          placed asteroids do not appear within region around ship (uses defaultCollision)
+       2. When a bullet is fired, it divides an asteroid that it intersects with
+       3. When the ship hits an asteroid, the game is over
+
 """
 import random
 from math import pi, sin, cos
@@ -35,13 +49,18 @@ SHIP         = 'ship'
 ASTEROID     = 'asteroid'
 BULLET       = 'bullet'
 
+# Game Status
+NEUTRAL   = 0
+WON       = 1
+DESTROYED = 2
+PLAYING   = 3
 
 class AsteroidsApp:
     
     def __init__(self, master):
         """App for detect collisions between moving circles using QuadTree."""
         
-        master.title('Asteroid playing field.') 
+        master.title('Asteroid playing field. Click to restart game.') 
         self.master = master 
         
         # QuadTree holds the events
@@ -56,8 +75,7 @@ class AsteroidsApp:
         self.ship = None
         self.bullets = []
         self.thrust = False
-        self.destroyed = False
-        self.win = False
+        self.status = NEUTRAL
 
     def init(self):
         """
@@ -78,10 +96,8 @@ class AsteroidsApp:
         # place ship in center and clear bullets. [3] is orientation, [DX,DY] are velocity
         self.ship = [256, 256, ShipRadius, pi/2, None, 0, 0]
         self.bullets = []
-        self.win = False
+        self.status = PLAYING
         self.visit(self.tree.root)
-        self.destroyed = False
-        self.master.after(frameDelay, self.updateLocations)
          
     def toCartesian(self, y):
         """Convert tkinter point into Cartesian."""
@@ -96,12 +112,16 @@ class AsteroidsApp:
         return tk_y
     
     def clear(self, key):
+        """
+        React to key up events by turning off thruster. Behaves differently on Mac
+        than on PC.
+        """
         if key.char == 'l':
             self.thrust = False
     
     def action(self, key):
         """
-        Detect Thrust (L), Turn Right (D), Turn Left (A) and Fire (SPACE)
+        Detect Thrust (L), Turn Right (D), Turn Left (A) and Fire (SPACE).
         """
         if self.ship is None:
             return
@@ -148,7 +168,7 @@ class AsteroidsApp:
                                     fill='black', tag=BULLET)
                 
     def updateShip(self):
-        """Draw ship and orientation, and the exhaust thrust if in use.."""
+        """Draw ship and orientation, and the exhaust thrust if in use."""
         self.canvas.delete(SHIP)
         self.updateShape(self.ship)
         x = self.ship[X]
@@ -157,8 +177,8 @@ class AsteroidsApp:
         angle = self.ship[ANGLE]
         size = 2*pi/3
         color = 'black'
-        if self.destroyed: color = 'red'
-        if self.win: color = 'green'
+        if self.status == DESTROYED: color = 'red'
+        if self.status == WON: color = 'green'
         self.canvas.create_line(x + cos(angle)*ShipRadius, self.toTk(y + sin(angle)*ShipRadius),
                                 x + cos(angle+size)*ShipRadius, self.toTk(y + sin(angle+size)*ShipRadius),
                                 fill=color, tag=SHIP)
@@ -171,6 +191,8 @@ class AsteroidsApp:
         self.canvas.create_line(x + cos(angle-size)*ShipRadius, self.toTk(y + sin(angle-size)*ShipRadius),
                                 x + cos(angle)*ShipRadius, self.toTk(y + sin(angle)*ShipRadius),
                                 fill=color, tag=SHIP)
+        
+        # On Mac, thrust won't appear because of difference in key released events.
         if self.thrust:
             self.canvas.create_oval(x - 2, self.toTk(y - 2),
                                 x + 2, self.toTk(y + 2),
@@ -194,6 +216,9 @@ class AsteroidsApp:
 
     def start(self, event):
         """Restart."""
+        # If we have won or lost, need to re-register timed handler
+        if not self.status == PLAYING:
+            self.master.after(frameDelay, self.updateLocations)
         self.init()
 
     def visit(self, node):
@@ -214,14 +239,16 @@ class AsteroidsApp:
         """Move all circles, reconstruct QuadTree and repaint."""
         if self.ship is None:
             self.init()
-        if not self.destroyed and not self.win:
+            
+        # schedule next update if we are still playing
+        if self.status == PLAYING:
             self.master.after(frameDelay, self.updateLocations)
 
-        self.updateShip()
         if self.tree.root is None:
             self.bullets = []
-            self.win = True 
+            self.status = WON
             self.canvas.delete(BULLET)
+            self.updateShip()
             return
 
         # check if any bullet has hit an asteroid. If so, remove and add two
@@ -249,12 +276,16 @@ class AsteroidsApp:
                 # Move from one side to the other, top and bottom
                 self.updateShape(c)
                 self.tree.add(c)
+
+        # Update our location and the bullets                
+        self.updateShip()
         self.updateBullets()      
          
         # Final check to see if any asteroid intersects our ship
         for c in self.tree.collide(self.ship):
-            self.destroyed = True
+            self.status = DESTROYED
         
+        # Redraw all asteroids
         self.canvas.delete(ASTEROID)
         self.visit(self.tree.root)
 
