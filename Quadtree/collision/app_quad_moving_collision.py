@@ -101,9 +101,7 @@ class QuadTreeMovingApp:
             if n.circles is None: 
                 continue
             
-            circles = list(n.circles)
-            for idx in range(len(circles)):
-                c = circles[idx]
+            for c in n.circles:
                 c[HIT] = False
                 
                 if c[X] - c[RADIUS] + c[DX] <= self.tree.region.x_min:

@@ -49,7 +49,7 @@ class AsteroidsApp:
         
         self.canvas = Canvas(master, width=512, height=512)        
         self.canvas.bind("<Button-1>", self.start)
-        self.master.after(frameDelay, self.updateLocations)
+        
         master.bind("<Key>", self.action)
         master.bind("<KeyRelease-l>", self.clear)
         self.canvas.pack()
@@ -81,6 +81,7 @@ class AsteroidsApp:
         self.win = False
         self.visit(self.tree.root)
         self.destroyed = False
+        self.master.after(frameDelay, self.updateLocations)
          
     def toCartesian(self, y):
         """Convert tkinter point into Cartesian."""
@@ -212,7 +213,8 @@ class AsteroidsApp:
         """Move all circles, reconstruct QuadTree and repaint."""
         if self.ship is None:
             self.init()
-        self.master.after(frameDelay, self.updateLocations)
+        if not self.destroyed and not self.win:
+            self.master.after(frameDelay, self.updateLocations)
 
         self.updateShip()
         if self.tree.root is None:
