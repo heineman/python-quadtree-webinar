@@ -1,7 +1,8 @@
 """
     Sample Game in which a triangular ship navigates amongst a collection of
     moving asteroids, trying to shoot and destroy all asteroids before 
-    colliding with one of them.
+    colliding with one of them. There are some quirks, but after all, this
+    is just a fun demo of the application of collisions.
     
     Actions:
       A      -- rotate left
