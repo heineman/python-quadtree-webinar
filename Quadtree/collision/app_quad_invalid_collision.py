@@ -1,15 +1,17 @@
 """
-    Demonstration application that ALMOST solves case with circles of fixed radius.
-    The problem is that it only identifies collisions between circles IN THE
-    SAME LEAFE NODE, since that is where a point-based quadtree stores its points.
+    Demonstration application that ALMOST solves case with circles of
+    fixed radius.  The problem is that it only identifies collisions
+    between circles IN THE SAME LEAFE NODE, since that is where a
+    point-based quadtree stores its points.
     
-    The other problem is that when it comes to collision detection, we can't
-    represent a 2D-circle by a single point. And don't even get started on 
-    trying to find neighbor regions based on the fixed Radius size, since that
-    leads to more complicated inefficiencies.
+    The other problem is that when it comes to collision detection, we
+    can't represent a 2D-circle by a single point. And don't even get
+    started on trying to find neighbor regions based on the fixed
+    Radius size, since that leads to more complicated inefficiencies.
     
-    Left mouse adds circle. All collisions remain with each mouse click which 
-    means we only need to check for collisions against the newly added circle.
+    Left mouse adds circle. All collisions remain with each mouse
+    click which means we only need to check for collisions against the
+    newly added circle.
 """
 
 from tkinter import Tk, Canvas, ALL

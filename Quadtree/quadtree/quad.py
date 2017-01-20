@@ -1,18 +1,20 @@
 """
     Quadtree implementation.
     
-    Every Quad Node has four children, partitioning space accordingly based on NE, NW, 
-    SW, SE quadrants. Each Node evenly divides quadrants and stores circles that are 
-    wholly contained by its rectangular region. 
+    Every Quad Node has four children, partitioning space accordingly
+    based on NE, NW, SW, SE quadrants. Each Node evenly divides
+    quadrants and stores circles that are wholly contained by its
+    rectangular region.
     
     Two or more identical circles can exist.
     
-    Because the circles are two-dimensional, they may intersect two (or more) of the 
-    subregions in the quadtree. Therefore, each circle is stored in the highest node  
-    in the tree whose associated region fully encloses the circle.
+    Because the circles are two-dimensional, they may intersect two
+    (or more) of the subregions in the quadtree. Therefore, each
+    circle is stored in the highest node in the tree whose associated
+    region fully encloses the circle.
     
-    When the circles are large, this means the resulting quadtree might be skewed  
-    with far too many circles stored in upper nodes. 
+    When the circles are large, this means the resulting quadtree
+    might be skewed with far too many circles stored in upper nodes.
 """
 
 from adk.region import Region, X, Y
@@ -41,8 +43,9 @@ class QuadNode:
                     yield c
             
             # Done if no sub-quadrants exist
-            if self.children[NE] == None: return
-            
+            # if self.children[NE] == None: return
+            if self.isLeaf(): return
+
             for quad in self.quadrants(circle):
                 for c in self.children[quad].collide(circle):
                     yield c

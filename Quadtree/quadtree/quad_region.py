@@ -1,21 +1,24 @@
 """
-    Quadtree implementation for storing points using integer-coordinate regions.
+    Quadtree implementation for storing points using
+    integer-coordinate regions.
     
-    Every Quad Node has four children, partitioning space accordingly based on 
-    NE, NW, SW, SE quadrants. Each Node evenly divides quadrants. Each node 
-    represents a square collection of points, evenly subdivided into four 
-    children nodes, until leaf nodes representing an individual point. 
+    Every Quad Node has four children, partitioning space accordingly
+    based on NE, NW, SW, SE quadrants. Each Node evenly divides
+    quadrants. Each node represents a square collection of points,
+    evenly subdivided into four children nodes, until leaf nodes
+    representing an individual point.
     
-    The Quadtree implements set-semantics. This means there are no duplicate 
-    (x, y) points in a quadtree.
+    The Quadtree implements set-semantics. This means there are no
+    duplicate (x, y) points in a quadtree.
     
     Actual point objects only exist within the leaf nodes.
     
-    Note that this data structure is not suitable for collision detection of
-    two-dimensional shapes. It offers an alternative approach for decomposing
-    collection of points in two-dimensional region. This structure has been used
-    for data compression of black/white pixel-based images, where a pixel is 
-    either on (black) or off (white).
+    Note that this data structure is not suitable for collision
+    detection of two-dimensional shapes. It offers an alternative
+    approach for decomposing collection of points in two-dimensional
+    region. This structure has been used for data compression of
+    black/white pixel-based images, where a pixel is either on (black)
+    or off (white).
 """
 
 from adk.region import X, Y, Region
@@ -65,8 +68,8 @@ class QuadNode:
 
     def remove(self, pt):
         """
-        Remove pt from QuadNode. Eventually get to single point node or a full node 
-        that contains this point.
+        Remove pt from QuadNode. Eventually get to single point node
+        or a full node that contains this point.
         """
         if self.isPoint():
             return (None, True)

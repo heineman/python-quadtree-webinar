@@ -82,8 +82,16 @@ class QuadTreeFixedApp:
         else:
             dx = random.randint(1,4)*(2*random.randint(0,1)-1)
             dy = random.randint(1,4)*(2*random.randint(0,1)-1)
-            circle = [event.x, self.toCartesian(event.y), 
-                      random.randint(4, MaxRadius), False, False, dx, dy, None]
+            
+            # make sure circle COMPLETELY fits within region to
+            # avoid strange edge-cases with moving circles.
+            radius = random.randint(4, MaxRadius)
+            x,y = event.x,self.toCartesian(event.y)
+            if x < radius: x = radius
+            if y < radius: y = radius
+            if x > 512 - radius: x = 512 - radius
+            if y > 512 - radius: y = 512 - radius
+            circle = [x, y, radius, False, False, dx, dy, None]
             
             self.tree.add(circle)
 

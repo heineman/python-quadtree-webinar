@@ -1,18 +1,19 @@
 """
     Quadtree implementation for storing points.
     
-    Every Quad Node has up to four children, partitioning space accordingly based on 
-    NE, NW, SW, SE quadrants. Each Node evenly divides quadrants. Each node can store
-    4 points, after which it must be subdivided.
+    Every Quad Node has up to four children, partitioning space
+    accordingly based on NE, NW, SW, SE quadrants. Each Node evenly
+    divides quadrants. Each node can store 4 points, after which it
+    must be subdivided.
     
-    A quadtree implements set-semantics. This means there are no duplicate (x, y)
-    points in a quadtree.
+    A quadtree implements set-semantics. This means there are no
+    duplicate (x, y) points in a quadtree.
     
     Actual point objects only exist within the leaf nodes.
     
-    Note that this data structure is not suitable for collision detection of
-    two-dimensional shapes, but is shown here as a starting data structure to 
-    prepare for proper collision detection.
+    Note that this data structure is not suitable for collision
+    detection of two-dimensional shapes, but is shown here as a
+    starting data structure to prepare for proper collision detection.
 """
 
 from adk.region import X, Y, Region
@@ -72,9 +73,10 @@ class QuadNode:
 
     def remove(self, pt):
         """
-        Remove pt from descendant of this tree, returning (newRoot,update), where
-        update is True if the point was removed from tree rooted at self, and 
-        newRoot is the new root for parent node to use.
+        Remove pt from descendant of this tree, returning
+        (newRoot,update), where update is True if the point was
+        removed from tree rooted at self, and newRoot is the new root
+        for parent node to use.
         """
         if self.points is not None and pt in self.points:
             if len(self.points) == 1:

@@ -1,0 +1,72 @@
+0. [Start] Ensure PYTHONPATH set properly
+  
+  * source env.sh
+
+1. [6] Review bst0.py
+
+  * observe structure of BinaryNode
+  * observe structure of BinaryTree
+  * python3 performance/exercise_bst0.py [observe failures]
+
+  * complete BinaryTree.add
+  * complete BinaryNode.add
+  * complete BinaryTree.__contains__
+  * review BinaryNode.inorder traversal technique
+  * review BinaryTree.__iter__ that invokes inorder method
+
+  * python3 performance/exercise_bst0.py [observe failures] 
+
+2. [10] in bst0.py
+
+  * complete BinaryTree.sameStartingLetter [create iterator-like method]
+  * complete findAnagrams [consume iterator]
+
+3. [18] execute app_region_visualize
+
+  * python3 app/app_region_visualize.py
+  * recreate the 25-point collection and show the quadtree resulting from
+    each addition. Reset as needed to show other sample collections.
+
+4. [20] review quad_region.QuadNode add method
+
+5. [24] review quad_point.QuadNode structure
+
+6. [26] execute app_point_visualize
+
+  * python3 app/app_point_visualize.py
+
+7. [33] execute app_quad_invalid_collision
+
+  * python3 collision/app_quad_invalid_collision.py
+  * demonstrate valid collisions
+  * demonstrate missed collisions [and explain why?]
+
+8. [34] demonstrate collision detection
+
+  * collision/app_quad_invalid_collision has collide method
+
+9. [36] review add method for quad.py
+
+  * review quadtree/quad.py which contains QuadNode.add method
+
+10. [37] discussion of MULTIPLE attribute in circle
+
+  * not functional. Only here to support visualization.
+
+11. [40] execute app_quad_fixed_collision
+
+  * python3 collision/app_quad_fixed_collision.py
+  * python3 app/app_quad_fixed_visualize.py to visualize Quadtree
+  
+12. [41] Describe circle structure in more detail
+
+  * review quadtree/util.py if needed
+
+13. [42] moving circles and collision detection
+
+  * python3 app/app_quad_moving_visualize.py
+
+14. [45] execute app_asteroid_field
+
+  * python3 app/app_asteroid_field.py 
+

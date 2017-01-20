@@ -1,8 +1,8 @@
 """
     Non-balanced Binary Search Tree.
     
-    This class is not to be used in production code. Shown here to demonstrate the
-    simple logic yet drastic inefficiencies when tree degenerates. 
+    This class is not to be used in production code. Shown here to demonstrate
+    the simple logic yet drastic inefficiencies when tree degenerates. 
     
     Find full details on balanced BSTs in "Algorithms in a Nutshell, 2ed"
     http://shop.oreilly.com/product/0636920032885.do
